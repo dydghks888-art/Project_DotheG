@@ -1382,11 +1382,11 @@ function sendToSheets(sub){
       kitVersion: sub.kitVersion,
       answers: JSON.stringify(sub.answers)
     };
-    // application/x-www-form-urlencoded 로 전송 (preflight 없음 + Apps Script e.parameter.data 로 안정 수신)
+    // application/x-www-form-urlencoded + no-cors 모드: CORS 차단을 우회하며 데이터는 정상 도달
     const body = new URLSearchParams();
     body.append('data', JSON.stringify(payload));
-    fetch(SHEETS_ENDPOINT_URL, { method:'POST', body: body })
-      .then(r => { console.log('[Sheets POST] status:', r.status, r.statusText); })
+    fetch(SHEETS_ENDPOINT_URL, { method:'POST', mode:'no-cors', body: body })
+      .then(()  => { console.log('[Sheets POST] sent (no-cors, opaque response — 시트 직접 확인 필요)'); })
       .catch(err => { console.warn('[Sheets POST] network error:', err); });
   } catch(e){ console.warn('[Sheets POST] payload error:', e); }
 }
@@ -2274,7 +2274,16 @@ S('btnSyncSheets').addEventListener('click', async ()=>{
     renderAdminList();
     alert(`동기화 완료\n· 시트에서 ${remote.length}건 수신\n· 로컬과 합쳐 총 ${merged.length}건 저장됨`);
   } catch(err){
-    alert('동기화 실패: ' + err.message + '\n\n웹 앱 URL이 올바른지, 인터넷 연결이 정상인지 확인해 주세요.');
+    const detail = err.message || String(err);
+    if (confirm(
+      '동기화 실패: ' + detail + '\n\n' +
+      '브라우저 보안(CORS) 정책으로 막힌 가능성이 큽니다.\n\n' +
+      '대안 1) 운영자가 PC에서 키트를 열 때도 GitHub Pages URL을 사용하세요.\n' +
+      '대안 2) 시트 데이터를 새 탭에서 JSON으로 받아 "JSON 복원" 버튼으로 불러올 수 있습니다.\n\n' +
+      '대안 2를 시도하시겠습니까? (확인 누르면 새 탭에 JSON이 표시됩니다.\n전체 복사 → 메모장에 붙여넣고 .json으로 저장 → JSON 복원 버튼으로 가져오기)'
+    )){
+      window.open(SHEETS_ENDPOINT_URL, '_blank');
+    }
   } finally {
     btn.disabled = false;
     btn.textContent = orig;
