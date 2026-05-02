@@ -1,0 +1,2332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>과학고 적합성 진단키트 — 학생 적성·역량 종합 진단</title>
+<style>
+/* ---------------------------------------------------------------
+   Claude-style design system
+   --------------------------------------------------------------- */
+:root{
+  --bg:        #FAF9F5;
+  --bg-soft:   #F5EFE6;
+  --card:      #FFFFFF;
+  --line:      #E8E0D5;
+  --line-soft: #F0E9DC;
+  --ink:       #1F1E1D;
+  --ink-soft:  #4A4845;
+  --ink-mute:  #8A867E;
+  --accent:    #D97757;   /* Claude coral */
+  --accent-2:  #C56541;   /* deeper rust */
+  --accent-soft:#F8E8DF;
+  --good:      #5B8F66;
+  --warn:      #C29B3B;
+  --bad:       #B05A4A;
+  --shadow-sm: 0 1px 2px rgba(31,30,29,0.04), 0 2px 6px rgba(31,30,29,0.04);
+  --shadow-md: 0 4px 14px rgba(31,30,29,0.06), 0 14px 38px rgba(31,30,29,0.05);
+  --radius:    14px;
+  --radius-sm: 10px;
+  --radius-lg: 22px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);}
+body{
+  font-family:'Pretendard','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','Malgun Gothic',sans-serif;
+  font-feature-settings:'ss01','cv11';
+  color:var(--ink);
+  font-size:15.5px;
+  line-height:1.6;
+  letter-spacing:-0.01em;
+  min-height:100vh;
+  padding:32px 16px 60px;
+}
+.app{
+  max-width:880px;margin:0 auto;
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  padding:0 4px 18px;
+}
+.brand-mark{
+  width:28px;height:28px;border-radius:8px;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:700;font-size:14px;
+  box-shadow:0 2px 6px rgba(217,119,87,.35);
+}
+.brand-name{font-size:14px;color:var(--ink-soft);letter-spacing:.02em;}
+.brand-name b{color:var(--ink);font-weight:600;}
+
+.surface{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md);
+  overflow:hidden;
+}
+.hero{
+  padding:38px 44px 32px;
+  border-bottom:1px solid var(--line-soft);
+  background:
+    radial-gradient(800px 200px at 100% -50%, rgba(217,119,87,.12), transparent 60%),
+    var(--card);
+}
+.hero h1{
+  font-size:28px;letter-spacing:-0.02em;font-weight:700;
+  margin-bottom:10px;
+}
+.hero .subtitle{color:var(--ink-soft);font-size:15px;}
+.hero .meta{
+  display:flex;gap:18px;margin-top:18px;flex-wrap:wrap;
+  color:var(--ink-mute);font-size:13.5px;
+}
+.hero .meta span{display:inline-flex;align-items:center;gap:6px;}
+.hero .meta i{
+  display:inline-block;width:6px;height:6px;border-radius:99px;
+  background:var(--accent);
+}
+
+.progress-track{height:3px;background:var(--bg-soft);}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .45s ease;}
+
+main{padding:36px 44px 40px;}
+
+/* screens */
+.screen{display:none;animation:fade .35s ease;}
+.screen.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* intro */
+.intro h2{font-size:20px;margin-bottom:10px;letter-spacing:-0.01em;}
+.intro p{color:var(--ink-soft);margin-bottom:12px;}
+
+.note{
+  background:var(--bg-soft);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:18px 22px;
+  margin:22px 0 28px;
+}
+.note h4{font-size:14px;color:var(--accent-2);margin-bottom:10px;letter-spacing:.02em;text-transform:uppercase;}
+.note ul{padding-left:18px;color:var(--ink-soft);font-size:14.5px;}
+.note ul li{margin-bottom:5px;}
+
+/* form */
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px 16px;
+  margin-bottom:18px;
+}
+.field{display:flex;flex-direction:column;gap:6px;}
+.field.full{grid-column:1/-1;}
+.field label{font-size:13px;color:var(--ink-soft);font-weight:500;}
+.field label .req{color:var(--accent);margin-left:3px;}
+.field input,.field select{
+  width:100%;padding:12px 14px;font-size:15px;font-family:inherit;
+  border:1.5px solid var(--line);border-radius:var(--radius-sm);
+  background:#fff;color:var(--ink);
+  transition:border-color .15s, box-shadow .15s;
+}
+.field input:focus,.field select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 4px var(--accent-soft);
+}
+.field .err{font-size:12.5px;color:var(--bad);min-height:16px;}
+.consent{
+  display:flex;gap:10px;align-items:flex-start;
+  background:var(--bg-soft);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:14px 16px;font-size:13.5px;color:var(--ink-soft);
+  margin:6px 0 24px;
+}
+.consent input{transform:translateY(2px);accent-color:var(--accent);}
+
+/* quiz */
+.quiz-meta{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:18px;
+}
+.tag{
+  display:inline-block;font-size:12px;font-weight:600;letter-spacing:.04em;
+  padding:5px 12px;border-radius:999px;
+  background:var(--accent-soft);color:var(--accent-2);
+}
+.qcount{font-size:13px;color:var(--ink-mute);}
+
+.scenario{
+  background:var(--bg-soft);
+  border-left:3px solid var(--accent);
+  padding:14px 18px;
+  border-radius:8px;
+  font-size:14.5px;color:var(--ink-soft);
+  margin-bottom:14px;
+}
+.scenario b{color:var(--ink);}
+
+.qtext{
+  font-size:18px;font-weight:600;line-height:1.55;
+  margin:6px 0 18px;color:var(--ink);
+  letter-spacing:-0.005em;
+}
+
+.options{display:flex;flex-direction:column;gap:10px;}
+.option{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px 18px;
+  border:1.5px solid var(--line);border-radius:var(--radius-sm);
+  background:#fff;cursor:pointer;
+  transition:all .15s;
+}
+.option:hover{border-color:#E2C8B7;background:#FCF8F4;}
+.option.selected{border-color:var(--accent);background:var(--accent-soft);}
+.option .marker{
+  flex-shrink:0;width:22px;height:22px;border-radius:99px;
+  border:1.5px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  margin-top:1px;
+  font-size:12px;font-weight:600;color:var(--ink-mute);
+  background:#fff;
+}
+.option.selected .marker{border-color:var(--accent);background:var(--accent);color:#fff;}
+.option .otext{flex:1;font-size:15px;line-height:1.5;color:var(--ink);}
+
+/* nav */
+.nav{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:30px;padding-top:22px;
+  border-top:1px solid var(--line-soft);
+}
+button{
+  padding:11px 24px;font-size:14.5px;font-weight:600;
+  border:none;border-radius:var(--radius-sm);
+  cursor:pointer;font-family:inherit;
+  transition:all .15s;
+}
+.btn-primary{
+  background:var(--accent);color:#fff;
+  box-shadow:0 1px 0 rgba(0,0,0,.04), 0 4px 12px rgba(217,119,87,.25);
+}
+.btn-primary:hover{background:var(--accent-2);transform:translateY(-1px);}
+.btn-primary:disabled{background:#E5DDD2;color:#9E978A;box-shadow:none;cursor:not-allowed;transform:none;}
+.btn-ghost{background:transparent;color:var(--ink-soft);border:1.5px solid var(--line);}
+.btn-ghost:hover:not(:disabled){background:var(--bg-soft);}
+.btn-ghost:disabled{opacity:.45;cursor:not-allowed;}
+.btn-link{
+  background:none;color:var(--ink-mute);font-size:12.5px;
+  padding:6px 8px;text-decoration:underline;text-underline-offset:3px;
+}
+.btn-link:hover{color:var(--accent);}
+
+/* completion */
+.complete{
+  text-align:center;padding:30px 10px 10px;
+}
+.complete .check{
+  width:74px;height:74px;border-radius:99px;
+  background:var(--accent-soft);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;margin:0 auto 22px;
+  border:2px solid var(--accent);
+}
+.complete h2{font-size:24px;margin-bottom:10px;}
+.complete p{color:var(--ink-soft);font-size:15px;margin-bottom:8px;}
+.complete .muted{font-size:13px;color:var(--ink-mute);margin-top:24px;}
+
+/* footer */
+.foot{
+  text-align:center;font-size:12.5px;color:var(--ink-mute);
+  margin-top:18px;
+}
+.foot a, .foot button{color:var(--ink-mute);text-decoration:underline;cursor:pointer;background:none;border:none;font-size:12.5px;font-family:inherit;}
+.foot button:hover, .foot a:hover{color:var(--accent);}
+
+/* modal */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(31,30,29,.55);
+  display:none;align-items:center;justify-content:center;z-index:50;
+  backdrop-filter:blur(2px);
+}
+.modal-bg.active{display:flex;animation:fade .2s ease;}
+.modal{
+  background:var(--card);border-radius:var(--radius-lg);
+  width:min(90vw,420px);padding:30px;
+  border:1px solid var(--line);box-shadow:var(--shadow-md);
+}
+.modal h3{font-size:18px;margin-bottom:6px;}
+.modal p{color:var(--ink-soft);font-size:14px;margin-bottom:16px;}
+.modal input{
+  width:100%;padding:12px 14px;font-size:15px;
+  border:1.5px solid var(--line);border-radius:var(--radius-sm);
+  margin-bottom:14px;font-family:inherit;
+}
+.modal input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);}
+.modal-row{display:flex;gap:8px;justify-content:flex-end;}
+
+/* admin */
+.admin-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:24px;
+}
+.admin-bar h2{font-size:22px;}
+.admin-bar .tools{display:flex;gap:8px;flex-wrap:wrap;}
+.admin-bar button{padding:8px 14px;font-size:13px;}
+.stat-row{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:12px;
+  margin-bottom:24px;
+}
+.stat-card{
+  background:var(--bg-soft);border:1px solid var(--line);
+  border-radius:var(--radius);padding:14px 16px;
+}
+.stat-card .l{font-size:12px;color:var(--ink-mute);margin-bottom:4px;}
+.stat-card .v{font-size:22px;font-weight:700;color:var(--ink);}
+
+table.list{
+  width:100%;border-collapse:collapse;font-size:13.5px;
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+}
+table.list th, table.list td{
+  padding:11px 12px;text-align:left;border-bottom:1px solid var(--line-soft);
+}
+table.list th{background:var(--bg-soft);color:var(--ink-soft);font-weight:600;font-size:12.5px;}
+table.list tr:last-child td{border-bottom:none;}
+table.list tr:hover td{background:#FCF8F4;cursor:pointer;}
+.empty{
+  text-align:center;padding:40px 20px;color:var(--ink-mute);font-size:14px;
+  background:var(--bg-soft);border:1px dashed var(--line);border-radius:var(--radius);
+}
+
+.grade-badge{
+  display:inline-block;padding:3px 10px;border-radius:999px;
+  font-size:12px;font-weight:700;letter-spacing:.04em;
+}
+.grade-S{background:#EFE2D6;color:#7A4A2A;}
+.grade-A{background:#FBE3D7;color:#A2421C;}
+.grade-B{background:#E5EDDF;color:#3F6B36;}
+.grade-C{background:#F2EBD7;color:#86692A;}
+.grade-D{background:#EDD9D2;color:#8E3F2E;}
+
+/* report */
+.report-section{
+  margin-bottom:32px;
+}
+.report-head{
+  background:var(--bg-soft);
+  padding:20px 24px;border-radius:var(--radius);
+  margin-bottom:20px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+}
+.report-head h3{font-size:20px;margin-bottom:4px;}
+.report-head .info{color:var(--ink-soft);font-size:14px;}
+.report-head .info b{color:var(--ink);}
+.report-head .right{text-align:right;}
+.report-head .total{font-size:34px;font-weight:800;color:var(--ink);letter-spacing:-0.02em;}
+.report-head .total span{font-size:16px;color:var(--ink-mute);font-weight:500;margin-left:4px;}
+
+h4.section-title{
+  font-size:15px;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--accent-2);margin-bottom:14px;
+  padding-bottom:8px;border-bottom:1.5px solid var(--accent-soft);
+}
+
+.area-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+}
+.area-card{
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;background:#fff;
+}
+.area-card .top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px;}
+.area-card h5{font-size:14px;color:var(--ink-soft);font-weight:500;}
+.area-card .score{font-size:24px;font-weight:700;color:var(--ink);}
+.area-card .score .max{font-size:13px;color:var(--ink-mute);font-weight:500;}
+.bar-bg{height:8px;background:var(--bg-soft);border-radius:99px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width 1s ease;}
+.area-card .pct{font-size:12px;color:var(--ink-mute);margin-top:6px;}
+.area-card .verdict{font-size:13px;color:var(--ink-soft);margin-top:10px;line-height:1.5;}
+
+.detail-table{
+  width:100%;border-collapse:collapse;font-size:13px;
+  border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+}
+.detail-table th, .detail-table td{padding:9px 11px;border-bottom:1px solid var(--line-soft);text-align:left;vertical-align:top;}
+.detail-table th{background:var(--bg-soft);font-weight:600;color:var(--ink-soft);font-size:12px;}
+.detail-table tr:last-child td{border-bottom:none;}
+.tag-correct{color:#3F6B36;font-weight:600;}
+.tag-wrong{color:#A2421C;font-weight:600;}
+.tag-score{
+  display:inline-block;min-width:28px;text-align:center;
+  background:var(--accent-soft);color:var(--accent-2);
+  padding:2px 8px;border-radius:99px;font-weight:700;font-size:12px;
+}
+
+.guide-box{
+  background:linear-gradient(180deg,#FCF8F4,#fff);
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px 22px;
+}
+.guide-box p{margin-bottom:10px;color:var(--ink-soft);}
+.guide-box p strong{color:var(--ink);}
+.guide-box .row{
+  display:flex;gap:14px;align-items:flex-start;padding:8px 0;
+  border-bottom:1px dashed var(--line-soft);
+}
+.guide-box .row:last-child{border-bottom:none;}
+.guide-box .row .lbl{
+  flex-shrink:0;width:88px;font-size:12.5px;color:var(--accent-2);font-weight:700;
+  text-transform:uppercase;letter-spacing:.05em;padding-top:2px;
+}
+.guide-box .row .body{flex:1;font-size:14px;color:var(--ink-soft);line-height:1.6;}
+
+.school-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.pill{
+  display:inline-block;padding:4px 10px;border-radius:99px;
+  background:#fff;border:1px solid var(--line);
+  font-size:12.5px;color:var(--ink-soft);
+}
+.pill.primary{background:var(--accent-soft);border-color:#F0D5C4;color:var(--accent-2);font-weight:600;}
+
+@media (max-width:720px){
+  body{padding:18px 10px 50px;}
+  .hero{padding:28px 22px 24px;}
+  .hero h1{font-size:22px;}
+  main{padding:28px 22px 32px;}
+  .form-grid{grid-template-columns:1fr;}
+  .stat-row{grid-template-columns:repeat(2,1fr);}
+  .area-grid{grid-template-columns:1fr;}
+  .qtext{font-size:16.5px;}
+  table.list{font-size:12.5px;}
+  table.list th, table.list td{padding:9px 8px;}
+}
+/* ----------- 추가 컴포넌트: 학교 매칭 / 결과지 분리 ----------- */
+.match-pct{
+  display:inline-block;font-weight:700;font-size:13px;
+  padding:3px 10px;border-radius:999px;letter-spacing:.02em;
+}
+.tier-safe{ background:#DCEAD8; color:#2F5C2A; }
+.tier-match{ background:#E5EDDF; color:#3F6B36; }
+.tier-reach{ background:#F2EBD7; color:#86692A; }
+.tier-long{  background:#F4DDC9; color:#A2421C; }
+.tier-unfit{ background:#EDD9D2; color:#8E3F2E; }
+.stars{font-size:13px;color:var(--accent);letter-spacing:1px;}
+.stars-sm{font-size:11px;color:var(--accent);letter-spacing:.5px;}
+.school-table{
+  width:100%;border-collapse:collapse;font-size:13px;
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+}
+.school-table th,.school-table td{
+  padding:11px 12px;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top;
+}
+.school-table th{
+  background:var(--bg-soft);color:var(--ink-soft);font-weight:600;font-size:12px;
+  letter-spacing:.02em;
+}
+.school-table tr:last-child td{border-bottom:none;}
+.school-table .muted{color:var(--ink-mute);font-size:12px;margin-top:2px;}
+
+/* 결과지 분리 (학생용 / 운영자용) — 화면상 시각 구분 */
+.student-report{
+  position:relative;padding-bottom:34px;margin-bottom:38px;
+  border-bottom:2px dashed var(--line);
+}
+.student-report::after{
+  content:'― 여기까지 학생용 결과지 (학생·학부모 공유용) ―';
+  position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
+  background:var(--bg);padding:0 14px;
+  font-size:11.5px;color:var(--ink-mute);letter-spacing:.05em;white-space:nowrap;
+}
+.admin-report{ position:relative; padding-top:8px; }
+.admin-report::before{
+  content:'운영자 전용 — 외부 공유 금지';
+  display:inline-block;
+  background:#fff;border:1px solid var(--bad);color:var(--bad);
+  padding:3px 10px;border-radius:99px;font-size:11.5px;font-weight:700;
+  letter-spacing:.04em;margin-bottom:18px;
+}
+.student-encouragement{
+  background:linear-gradient(135deg,#FCF3EC,#F8E8DF);
+  border:1px solid #F0D5C4;border-radius:var(--radius);
+  padding:18px 22px;margin-top:8px;
+}
+.student-encouragement h4{font-size:14px;color:var(--accent-2);margin-bottom:8px;letter-spacing:.04em;text-transform:uppercase;}
+.student-encouragement p{color:var(--ink);font-size:14.5px;line-height:1.6;}
+
+.signature-row{
+  margin-top:28px;padding-top:18px;border-top:1px solid var(--line-soft);
+  display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-mute);
+}
+.signature-row span b{color:var(--ink);}
+
+/* ===========================================================
+   인쇄(PDF) 모드 — 색상 보존 + 페이지 분할 제어
+   =========================================================== */
+@page{ size:A4; margin:14mm 12mm; }
+@media print{
+  *{
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+    color-adjust:exact !important;
+  }
+  html,body{ background:#fff !important; padding:0 !important; margin:0 !important; }
+  body{ font-size:10.8pt; }
+  .app{ max-width:none; margin:0; padding:0; }
+  .surface{ box-shadow:none !important; border:none !important; border-radius:0 !important; overflow:visible !important; }
+  .hero, .progress-track, .nav, .admin-bar, .foot, .brand, .modal-bg, #importFile{ display:none !important; }
+  main{ padding:0 !important; }
+  #reportBody{ padding:0; }
+
+  /* 카드·표·헤더는 가능한 한 페이지 중간에 끊기지 않게 */
+  .area-card, .guide-box, .report-head, .school-table,
+  .stat-card, .student-encouragement, .scenario{
+    break-inside:avoid !important; page-break-inside:avoid !important;
+  }
+  h4.section-title, .report-head h3{ break-after:avoid !important; page-break-after:avoid !important; }
+
+  /* 표 헤더 반복 + 행 단위 분할 방지 */
+  thead{ display:table-header-group; }
+  tr{ page-break-inside:avoid !important; }
+
+  /* 학생용·운영자용 분리 — 운영자용은 새 페이지에서 시작 */
+  .student-report{
+    border-bottom:none !important; padding-bottom:0 !important; margin-bottom:0 !important;
+    page-break-after:always;
+  }
+  .student-report::after, .admin-report::before{ display:none !important; }
+  .admin-report{ padding-top:0; }
+
+  /* 인쇄 모드별 — 학생용만 */
+  body[data-print-mode="student"] .admin-report{ display:none !important; }
+  body[data-print-mode="student"] .student-report{ page-break-after:auto !important; }
+
+  /* 인쇄 모드별 — 운영자용만 */
+  body[data-print-mode="admin"] .student-report{ display:none !important; }
+
+  /* 일부 그라데이션·그림자 제거(인쇄 잉크 절약·번짐 방지) */
+  .student-encouragement{ background:#FCF3EC !important; }
+  .guide-box{ background:#FCF8F4 !important; }
+  .report-head{ background:#F5EFE6 !important; }
+  .bar-fill{ background:#D97757 !important; }
+
+  /* 인쇄 시 본문 가독성 */
+  .qtext, .area-card .verdict, .guide-box, .student-encouragement p{
+    color:#1F1E1D !important;
+  }
+  /* 운영자용 표지 마크 */
+  .admin-report-cover{
+    display:block !important;
+    text-align:center;padding:30px 20px 18px;
+    border-bottom:1px solid #E8E0D5;margin-bottom:18px;
+  }
+}
+.admin-report-cover{ display:none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand">
+    <div class="brand-mark">★</div>
+    <div class="brand-name"><b>과학고 적합성 진단</b> · 학생 적성·역량 종합 진단키트</div>
+  </div>
+
+<div class="surface">
+
+  <header class="hero">
+    <h1>과학고 적합성 종합 진단</h1>
+    <p class="subtitle">중2~중3 학생을 위한 50문항 진단 · 전국 주요 과학고 기출 스타일 반영</p>
+    <div class="meta">
+      <span><i></i> 4개 진단 영역</span>
+      <span><i></i> 약 60분 소요</span>
+      <span><i></i> 5단계 적합도 등급</span>
+      <span><i></i> 운영자 상담용 리포트 자동 생성</span>
+    </div>
+  </header>
+
+  <div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
+
+  <main>
+
+    <!-- ====== 학생 정보 입력 화면 ====== -->
+    <section id="screen-info" class="screen active">
+      <div class="intro">
+        <h2>응시자 정보를 정확히 입력해 주세요</h2>
+        <p>이 진단은 학생 본인의 학업 적성과 과학고 적합성을 종합적으로 측정합니다. 정확한 학생 식별과 추후 상담을 위해 <b>실명·학교명·연락처</b>가 반드시 필요합니다.</p>
+        <div class="note">
+          <h4>꼭 알아두세요</h4>
+          <ul>
+            <li>제출 후 <b>학생에게는 결과가 표시되지 않으며</b>, 운영(상담) 담당자가 별도로 결과를 분석하여 학부모·학생 상담 시 안내합니다.</li>
+            <li>진단은 1회 50문항이며 도중 종료/되돌아가기가 가능하지만, 모든 문항에 답해야 제출됩니다.</li>
+            <li>딜레마 상황 문항은 <b>정답이 없습니다.</b> 평소의 자신과 가장 가까운 행동을 솔직하게 골라 주세요.</li>
+          </ul>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>이름(실명)<span class="req">*</span></label>
+            <input type="text" id="f_name" placeholder="홍길동" autocomplete="off">
+            <div class="err" id="e_name"></div>
+          </div>
+          <div class="field">
+            <label>학교명<span class="req">*</span></label>
+            <input type="text" id="f_school" placeholder="○○중학교" autocomplete="off">
+            <div class="err" id="e_school"></div>
+          </div>
+          <div class="field">
+            <label>학년<span class="req">*</span></label>
+            <select id="f_grade">
+              <option value="">선택</option>
+              <option value="중1">중1</option>
+              <option value="중2">중2</option>
+              <option value="중3">중3</option>
+              <option value="중3 졸업예정">중3 졸업예정</option>
+            </select>
+            <div class="err" id="e_grade"></div>
+          </div>
+          <div class="field">
+            <label>거주 지역<span class="req">*</span></label>
+            <select id="f_region">
+              <option value="">선택</option>
+              <option value="성남">성남시 (분당·수정·중원)</option>
+              <option value="용인">용인시</option>
+              <option value="광교">광교 (수원시 영통구)</option>
+              <option value="수원">수원시 (광교 외)</option>
+              <option value="기타">기타 경기지역</option>
+            </select>
+            <div class="err" id="e_region"></div>
+          </div>
+          <div class="field" id="regionEtcWrap" style="display:none;">
+            <label>기타 지역 — 시·군 명시<span class="req">*</span></label>
+            <input type="text" id="f_region_etc" placeholder="예: 부천시 / 의정부시 / 안양시" autocomplete="off">
+            <div class="err" id="e_region_etc"></div>
+          </div>
+          <div class="field">
+            <label>학생 연락처(휴대폰)<span class="req">*</span></label>
+            <input type="text" id="f_phone" placeholder="010-1234-5678" autocomplete="off" inputmode="numeric">
+            <div class="err" id="e_phone"></div>
+          </div>
+          <div class="field">
+            <label>학부모 연락처(휴대폰)<span class="req">*</span></label>
+            <input type="text" id="f_parent" placeholder="010-1234-5678" autocomplete="off" inputmode="numeric">
+            <div class="err" id="e_parent"></div>
+          </div>
+        </div>
+
+        <label class="consent">
+          <input type="checkbox" id="f_consent">
+          <span>본인은 진단 응시 및 상담 목적의 개인정보(이름·학교·연락처·응답내용) 수집·이용·보관에 동의합니다. 수집된 정보는 진학 상담 외의 목적으로 사용되지 않으며, 보관 기간 종료 후 파기됩니다.</span>
+        </label>
+
+        <div class="nav">
+          <button class="btn-link" id="adminEntry">운영자 모드</button>
+          <button class="btn-primary" id="btnStart">진단 시작 →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 문항 화면 ====== -->
+    <section id="screen-quiz" class="screen">
+      <div class="quiz-meta">
+        <span class="tag" id="qSection"></span>
+        <span class="qcount" id="qCount"></span>
+      </div>
+      <div id="qScenario"></div>
+      <div class="qtext" id="qText"></div>
+      <div id="qOptions"></div>
+      <div class="nav">
+        <button class="btn-ghost" id="btnPrev">← 이전</button>
+        <button class="btn-primary" id="btnNext" disabled>다음 →</button>
+      </div>
+    </section>
+
+    <!-- ====== 학생 제출 완료 화면 ====== -->
+    <section id="screen-done" class="screen">
+      <div class="complete">
+        <div class="check">✓</div>
+        <h2>제출이 완료되었습니다</h2>
+        <p>응시해 주셔서 감사합니다, <b id="doneName"></b> 학생.</p>
+        <p>진단 결과는 운영(상담) 담당자가 분석한 후 별도 일정으로 안내드립니다.</p>
+        <p class="muted">이 페이지를 닫으셔도 됩니다. 결과 안내까지 영업일 기준 1~3일 정도 소요됩니다.</p>
+        <div style="margin-top:30px;">
+          <button class="btn-ghost" id="btnRestartStudent">처음 화면으로 (다음 학생)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 운영자 대시보드 ====== -->
+    <section id="screen-admin" class="screen">
+      <div class="admin-bar">
+        <h2>운영자 대시보드</h2>
+        <div class="tools">
+          <button class="btn-ghost" id="btnSyncSheets">☁ Sheets에서 동기화</button>
+          <button class="btn-ghost" id="btnPushSheets">↑ 로컬을 Sheets로 업로드</button>
+          <button class="btn-ghost" id="btnExportCsv">CSV 내보내기</button>
+          <button class="btn-ghost" id="btnExportJson">JSON 백업</button>
+          <button class="btn-ghost" id="btnImportJson">JSON 복원</button>
+          <button class="btn-ghost" id="btnClearAll" style="color:var(--bad);">전체 삭제</button>
+          <button class="btn-primary" id="btnAdminExit">학생 모드</button>
+        </div>
+      </div>
+
+      <div class="stat-row" id="adminStats"></div>
+
+      <h4 class="section-title">제출 응답 목록</h4>
+      <div id="adminList"></div>
+
+      <input type="file" id="importFile" accept=".json" style="display:none;">
+    </section>
+
+    <!-- ====== 운영자 상세 리포트 ====== -->
+    <section id="screen-report" class="screen">
+      <div class="admin-bar">
+        <h2>학생 진단 상세 리포트</h2>
+        <div class="tools">
+          <button class="btn-ghost" id="btnPrintStudent">학생용만 인쇄/PDF</button>
+          <button class="btn-ghost" id="btnPrintAdmin">운영자용만 인쇄/PDF</button>
+          <button class="btn-ghost" id="btnPrintBoth">전체 인쇄/PDF</button>
+          <button class="btn-primary" id="btnReportBack">← 목록으로</button>
+        </div>
+      </div>
+      <div id="reportBody"></div>
+    </section>
+
+  </main>
+</div>
+
+<div class="foot">
+  운영자 비밀번호 분실 시 코드 상단의 ADMIN_PASSWORD 상수를 변경 후 재배포하세요.
+</div>
+</div>
+
+<!-- ====== 운영자 비밀번호 모달 ====== -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3>운영자 인증</h3>
+    <p>이 영역은 진단 운영 담당자만 접근할 수 있습니다. 비밀번호를 입력하세요.</p>
+    <input type="password" id="adminPw" placeholder="비밀번호" autocomplete="off">
+    <div class="modal-row">
+      <button class="btn-ghost" id="modalCancel">취소</button>
+      <button class="btn-primary" id="modalOk">확인</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =================================================================
+   설정값
+   ================================================================= */
+const ADMIN_PASSWORD = "202750";   // 운영자 비밀번호 (필요 시 수정)
+const STORAGE_KEY    = "scihs_kit_v3_submissions";
+const KIT_VERSION    = "v3.0 (2026.05)";
+
+/* Google Sheets 자동 수집 — 셋업 매뉴얼 따라 Apps Script 배포 후 받은 웹 앱 URL을 붙여넣기.
+   비워두면 로컬 저장만 동작하며, 채워지면 자동으로 시트로도 전송됩니다. */
+const SHEETS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbyg7WpbnNQ3U8Kl0dFFLxsHf9-A2EOVDbsRkKxoL2SAKqZJwPoEsVIm1n1zOFvPpzRF8w/exec";  // 예: "https://script.google.com/macros/s/AKfycb.../exec"
+
+/* =================================================================
+   문항 데이터
+   - A: 수학·과학 개념 정확성 (15문항, 객관식 정답형)
+   - B: 과학적 사고력·탐구력 (15문항, 객관식 정답형 / 전국 주요 과학고 기출 스타일)
+   - C: 진로 적합성 (10문항, 딜레마 상황 - 옵션마다 1~5점)
+   - D: 자기주도·인성 (10문항, 딜레마 상황 - 옵션마다 1~5점)
+   각 옵션 score 의미:
+     · A·B 영역(mc) → 정답 1, 오답 0
+     · C·D 영역(dilemma) → 1~5점 (응답 가치 측정)
+   ================================================================= */
+const Q = [
+  /* ---------- A. 수학·과학 개념 정확성 (15) ---------- */
+  { area:'A', sub:'수학·정수론', type:'mc',
+    q:'다음 중 무리수의 정의로 가장 정확한 것은?',
+    options:[
+      {t:'분수로 나타낼 수 없는 수', s:0},
+      {t:'순환하지 않는 무한소수로 표현되는 실수', s:1},
+      {t:'제곱근 기호 √를 포함하는 수', s:0},
+      {t:'정수가 아닌 모든 수', s:0}
+    ]},
+  { area:'A', sub:'수학·함수', type:'mc',
+    q:'함수의 정의로 가장 정확한 설명은?',
+    options:[
+      {t:'두 변수 x, y 사이에 어떤 관계가 정해진 식', s:0},
+      {t:'정의역의 각 원소에 공역의 원소가 오직 하나씩 대응되는 대응관계', s:1},
+      {t:'그래프로 그릴 수 있는 모든 식', s:0},
+      {t:'y가 x에 따라 변하는 모든 관계', s:0}
+    ]},
+  { area:'A', sub:'수학·도형', type:'mc',
+    q:'두 도형이 합동(congruent)이라는 것의 정의는 무엇인가?',
+    options:[
+      {t:'두 도형의 넓이가 같다', s:0},
+      {t:'대응하는 변과 각이 모두 같다', s:0},
+      {t:'한 도형을 평행이동·회전·대칭이동시켜 다른 도형에 완전히 포갤 수 있다', s:1},
+      {t:'두 도형의 모양이 비슷하다', s:0}
+    ]},
+  { area:'A', sub:'수학·확률', type:'mc',
+    q:'사건 A의 확률 P(A)에 대한 설명으로 옳은 것은?',
+    options:[
+      {t:'P(A)=0이면 그 사건은 절대로 일어날 수 없다', s:0},
+      {t:'0 ≤ P(A) ≤ 1 이며, P(A) + P(Aᶜ) = 1 이다', s:1},
+      {t:'시행을 무한히 반복하면 P(A)는 항상 1/2에 수렴한다', s:0},
+      {t:'P(A)는 시행 횟수와 무관하게 항상 정확히 결정된다', s:0}
+    ]},
+  { area:'A', sub:'수학·방정식', type:'mc',
+    q:'일차방정식 ax + b = 0 (a, b는 실수)의 해의 개수에 대해 옳은 것은?',
+    options:[
+      {t:'항상 1개', s:0},
+      {t:'a > 0 일 때만 해가 존재한다', s:0},
+      {t:'a ≠ 0 이면 1개, a = 0·b ≠ 0 이면 0개, a = 0·b = 0 이면 무수히 많다', s:1},
+      {t:'a, b의 값에 관계없이 0개 또는 2개', s:0}
+    ]},
+  { area:'A', sub:'수학·식', type:'mc',
+    q:'다항식의 인수분해(factoring)의 본질적 정의는 무엇인가?',
+    options:[
+      {t:'다항식의 차수를 낮추어 더 작은 식으로 만드는 것', s:0},
+      {t:'한 다항식을 두 개 이상의 다항식의 곱으로 나타내는 것', s:1},
+      {t:'식을 전개하여 더 간단히 쓰는 것', s:0},
+      {t:'미지수의 값을 구하는 것', s:0}
+    ]},
+  { area:'A', sub:'수학·일차함수', type:'mc',
+    q:'일차함수 y = ax + b 에서 a와 b가 의미하는 것은?',
+    options:[
+      {t:'a는 y절편, b는 기울기', s:0},
+      {t:'a는 기울기(변화율), b는 y절편', s:1},
+      {t:'a는 x절편, b는 y절편', s:0},
+      {t:'a, b 모두 그래프의 기울기를 결정한다', s:0}
+    ]},
+  { area:'A', sub:'물리·역학', type:'mc',
+    q:'운동량과 충격량의 관계를 가장 정확히 설명한 것은?',
+    options:[
+      {t:'충격량 = 힘 × 이동 거리', s:0},
+      {t:'운동량 = 질량 × 가속도', s:0},
+      {t:'충격량은 운동량의 변화량과 같으며, 단위는 N·s = kg·m/s 로 동일하다', s:1},
+      {t:'운동량과 충격량은 단위가 서로 다르다', s:0}
+    ]},
+  { area:'A', sub:'화학·반응', type:'mc',
+    q:'화학 반응식 2H₂ + O₂ → 2H₂O 에서 계수 "2"가 의미하는 것은?',
+    options:[
+      {t:'분자의 무게가 2배라는 뜻', s:0},
+      {t:'반응에 참여하는 분자(또는 mol)의 개수 비를 나타낸다', s:1},
+      {t:'생성물의 부피', s:0},
+      {t:'원자 한 개의 질량', s:0}
+    ]},
+  { area:'A', sub:'생명·대사', type:'mc',
+    q:'식물의 광합성과 호흡의 관계로 옳은 것은?',
+    options:[
+      {t:'광합성은 식물만, 호흡은 동물만 한다', s:0},
+      {t:'식물도 호흡한다. 광합성은 빛에너지를 화학에너지로 저장하고, 호흡은 화학에너지를 분해해 ATP를 얻는다', s:1},
+      {t:'두 반응은 정확히 서로의 역반응이며 산물의 양도 항상 같다', s:0},
+      {t:'광합성은 산소를 분해하고, 호흡은 이산화탄소를 합성한다', s:0}
+    ]},
+  { area:'A', sub:'생명·생리', type:'mc',
+    q:'변온동물(ectotherm)의 정의로 가장 정확한 것은?',
+    options:[
+      {t:'겨울잠을 자는 동물', s:0},
+      {t:'체온이 외부 환경 온도에 따라 변하는 동물', s:1},
+      {t:'파충류만을 가리키는 분류', s:0},
+      {t:'몸이 차가운 동물', s:0}
+    ]},
+  { area:'A', sub:'지구·고생물', type:'mc',
+    q:'표준화석(index fossil)이 지층의 연대 결정에 활용될 수 있는 이유는?',
+    options:[
+      {t:'화석이 모든 지층에 골고루 존재하므로', s:0},
+      {t:'특정 시대에 광범위한 지역에 살았고 그 시기에만 존재한 생물의 화석이기 때문', s:1},
+      {t:'화석의 색이 시대마다 다르므로', s:0},
+      {t:'화석은 풍화에 강해 잘 보존되므로', s:0}
+    ]},
+  { area:'A', sub:'지구·구조론', type:'mc',
+    q:'판 구조론(plate tectonics)에 대한 설명으로 옳은 것은?',
+    options:[
+      {t:'지각은 하나의 판으로 이루어져 있다', s:0},
+      {t:'암석권이 여러 개의 판으로 나뉘어 연약권 위에서 상대적으로 이동한다', s:1},
+      {t:'모든 판은 같은 방향·속도로 움직인다', s:0},
+      {t:'판은 고정되어 움직이지 않으며, 지진은 판 내부에서만 발생한다', s:0}
+    ]},
+  { area:'A', sub:'화학·산염기', type:'mc',
+    q:'산(acid)을 정의하는 방식 중 "수용액에서 H⁺(또는 H₃O⁺)을 내놓는 물질"이라는 정의는 누구의 정의인가?',
+    options:[
+      {t:'아레니우스(Arrhenius) 정의', s:1},
+      {t:'브뢴스테드–로우리 정의', s:0},
+      {t:'루이스 정의', s:0},
+      {t:'돌턴의 정의', s:0}
+    ]},
+  { area:'A', sub:'물리·운동', type:'mc',
+    q:'속력(speed)과 속도(velocity)의 차이로 옳은 것은?',
+    options:[
+      {t:'두 양은 정의상 같으며 단위만 다르다', s:0},
+      {t:'속력은 스칼라(크기만), 속도는 벡터(크기와 방향)이다', s:1},
+      {t:'속력은 평균값, 속도는 순간값을 의미한다', s:0},
+      {t:'속력은 m/s, 속도는 km/h를 사용한다', s:0}
+    ]},
+
+  /* ---------- B. 과학적 사고력·탐구력 (15) - 전국 주요 과학고 기출 스타일 ---------- */
+  { area:'B', sub:'자료해석', type:'mc',
+    q:'어떤 효소의 반응 속도를 온도별로 측정한 결과 다음과 같다. 10℃:5, 20℃:12, 30℃:25, 40℃:35, 50℃:18, 60℃:2 (상대속도). 이 자료로부터 추론할 수 있는 가장 타당한 결론은?',
+    options:[
+      {t:'온도가 높을수록 효소 반응 속도는 항상 빨라진다', s:0},
+      {t:'효소는 약 40℃ 부근에서 최적 활성을 보이며, 그 이상에서는 변성되어 활성이 급격히 떨어진다', s:1},
+      {t:'효소는 모든 온도에서 일정한 속도로 반응한다', s:0},
+      {t:'효소는 50℃에서 가장 잘 작용하므로 50℃를 최적온도로 사용해야 한다', s:0}
+    ]},
+  { area:'B', sub:'변인통제', type:'mc',
+    q:'식물 A의 생장에 빛의 색깔이 미치는 영향을 알아보는 실험을 설계할 때 변수 설정으로 가장 적절한 것은?',
+    options:[
+      {t:'조작변인: 식물 종류 / 통제변인: 빛의 색깔', s:0},
+      {t:'조작변인: 빛의 색깔과 물의 양 / 종속변인: 생장량', s:0},
+      {t:'조작변인: 빛의 색깔 / 통제변인: 식물의 종·물·온도·흙 / 종속변인: 일정기간 후 생장량', s:1},
+      {t:'모든 변인을 다르게 설정하여 다양한 결과를 본다', s:0}
+    ]},
+  { area:'B', sub:'가설·이론', type:'mc',
+    q:'"양초를 비커로 덮으면 곧 꺼진다. 이는 산소가 연소에 필요하기 때문이다." 이 문장에서 "산소가 연소에 필요하다"는 부분은 탐구의 어떤 단계에 해당하는가?',
+    options:[
+      {t:'관찰', s:0},
+      {t:'가설(또는 이론적 설명)', s:1},
+      {t:'결론', s:0},
+      {t:'데이터', s:0}
+    ]},
+  { area:'B', sub:'다단계 추론', type:'mc',
+    q:'어떤 미생물 X는 50℃ 이상에서만 증식할 수 있다. 어떤 시료에서 X가 다수 발견되었다. 이때 가장 합리적인 추론은?',
+    options:[
+      {t:'시료는 한 번 이상 50℃ 이상의 환경을 거쳤을 가능성이 높다', s:1},
+      {t:'시료는 현재도 반드시 50℃ 이상이다', s:0},
+      {t:'시료의 온도는 50℃ 미만이다', s:0},
+      {t:'X는 모든 환경에서 증식 가능하다', s:0}
+    ]},
+  { area:'B', sub:'그래프해석', type:'mc',
+    q:'어떤 물체의 위치-시간 그래프가 시간이 지남에 따라 위로 볼록한 형태(기울기가 점점 커짐)를 보인다. 이 운동의 종류는?',
+    options:[
+      {t:'등속 직선 운동', s:0},
+      {t:'속력이 점점 빨라지는 가속 운동', s:1},
+      {t:'속력이 점점 느려지는 운동', s:0},
+      {t:'정지 상태', s:0}
+    ]},
+  { area:'B', sub:'수열·패턴', type:'mc',
+    q:'수열 1, 1, 2, 3, 5, 8, 13, ___, ... 의 다음 수와 그 규칙은?',
+    options:[
+      {t:'21 / 직전 두 항의 합 (피보나치 수열)', s:1},
+      {t:'18 / 5씩 증가', s:0},
+      {t:'20 / 등차수열', s:0},
+      {t:'16 / 이전 항의 2배', s:0}
+    ]},
+  { area:'B', sub:'실험설계', type:'mc',
+    q:'단진자(simple pendulum)의 주기에 영향을 주는 요인을 알아보는 실험에서, 주기에 직접적인 영향을 주는 변수만을 모두 고른 것은? (① 추 질량  ② 진폭(작은 각)  ③ 줄 길이  ④ 추 색깔)',
+    options:[
+      {t:'①, ③', s:0},
+      {t:'③ 만 (작은 진폭에서 주기는 줄 길이의 제곱근에 비례)', s:1},
+      {t:'①, ②, ③', s:0},
+      {t:'①, ②, ③, ④ 모두', s:0}
+    ]},
+  { area:'B', sub:'측정·통계', type:'mc',
+    q:'어떤 길이를 5번 측정한 결과: 10.1, 10.2, 10.0, 10.1, 10.1 cm. 평균과 표준편차의 의미로 옳은 것은?',
+    options:[
+      {t:'평균은 항상 참값이며 표준편차는 0이어야 한다', s:0},
+      {t:'평균은 참값에 대한 최선의 추정치이고, 표준편차는 측정값들의 흩어짐(정밀도)을 나타낸다', s:1},
+      {t:'표준편차가 클수록 측정이 정확하다', s:0},
+      {t:'평균값이 클수록 측정이 정확하다', s:0}
+    ]},
+  { area:'B', sub:'함수·도형', type:'mc',
+    q:'함수 y = -x² + 4 의 그래프 개형으로 옳은 것은?',
+    options:[
+      {t:'아래로 볼록한 포물선이며 꼭짓점은 (0, -4)', s:0},
+      {t:'위로 볼록한 포물선이며 꼭짓점은 (0, 4)이고, x = ±2 에서 x축과 만난다', s:1},
+      {t:'직선이며 기울기는 -1', s:0},
+      {t:'쌍곡선이며 점근선은 x축과 y축', s:0}
+    ]},
+  { area:'B', sub:'과학사', type:'mc',
+    q:'원자모형의 변천에서 "전자가 원자핵 주위의 특정한 궤도(에너지 준위)에서만 존재한다"는 모형을 처음 제안한 사람은?',
+    options:[
+      {t:'돌턴', s:0},
+      {t:'톰슨', s:0},
+      {t:'러더퍼드', s:0},
+      {t:'보어', s:1}
+    ]},
+  { area:'B', sub:'표본·통계', type:'mc',
+    q:'어떤 신약 효과 실험에서 8명 중 6명이 효과를 보였다고 한다. 이 결과를 해석할 때 가장 적절한 후속 행동은?',
+    options:[
+      {t:'표본이 적으므로 더 큰 표본과 대조군을 두고 재실험한다', s:1},
+      {t:'75%의 효과율이 확인되었으므로 효과가 있다고 단정한다', s:0},
+      {t:'2명이 효과가 없으니 무효라고 단정한다', s:0},
+      {t:'실험을 중단하고 다른 약을 찾는다', s:0}
+    ]},
+  { area:'B', sub:'상관·인과', type:'mc',
+    q:'"여름철 아이스크림 판매량과 익사 사고 건수가 양의 상관을 보인다." 이로부터 가장 타당한 결론은?',
+    options:[
+      {t:'아이스크림 섭취가 익사 위험을 증가시킨다', s:0},
+      {t:'두 변수 모두 기온이라는 제3의 변수에 영향받는 공통원인 가능성이 높다(상관 ≠ 인과)', s:1},
+      {t:'익사사고 발생이 아이스크림 매출을 늘린다', s:0},
+      {t:'두 변수는 서로 무관하다', s:0}
+    ]},
+  { area:'B', sub:'개념적용', type:'mc',
+    q:'얼음이 액체 상태의 물 위에 뜨는 가장 본질적 이유는?',
+    options:[
+      {t:'얼음이 차갑기 때문', s:0},
+      {t:'수소결합으로 인해 분자들이 6각형 결정구조를 이루며 분자 사이 빈 공간이 더 많아 밀도가 작아지기 때문', s:1},
+      {t:'얼음 안에 작은 공기방울들이 갇혀 있기 때문', s:0},
+      {t:'고체의 무게가 액체보다 항상 가볍기 때문', s:0}
+    ]},
+  { area:'B', sub:'탐구과정', type:'mc',
+    q:'일반적인 과학 탐구 활동의 순서로 가장 적절한 것은?',
+    options:[
+      {t:'문제 인식 → 가설 설정 → 실험 설계·자료 수집 → 분석·결론 → 일반화', s:1},
+      {t:'결론 도출 → 문제 인식 → 실험', s:0},
+      {t:'실험 → 가설 설정 → 문제 인식', s:0},
+      {t:'결론 → 가설 → 실험 → 문제 인식', s:0}
+    ]},
+  { area:'B', sub:'융합·천체', type:'mc',
+    q:'어떤 행성의 공전 궤도 반지름이 지구의 4배일 때, 케플러 제3법칙(T² ∝ r³)에 따른 이 행성의 공전 주기는 지구의 몇 배인가?',
+    options:[
+      {t:'4배', s:0},
+      {t:'8배 (∵ T = √(r³) = √64 = 8)', s:1},
+      {t:'16배', s:0},
+      {t:'64배', s:0}
+    ]},
+
+  /* ---------- C. 진로 적합성 (10) - 딜레마 상황 ---------- */
+  { area:'C', sub:'설명·소통', type:'dilemma',
+    scenario:'친구가 "방금 푼 그 수학 문제 어떻게 풀었는지 알려달라"고 부탁한다. 너는 풀이 직후라 머릿속이 또렷하다.',
+    q:'너는 어떻게 행동하는 편인가?',
+    options:[
+      {t:'정답만 빠르게 알려준다', s:1},
+      {t:'풀이 과정을 처음부터 설명하면서 친구가 이해할 때까지 함께 본다', s:5},
+      {t:'"교과서를 다시 봐"라고 말한다', s:2},
+      {t:'"지금은 바쁘다"고 미룬다', s:1}
+    ]},
+  { area:'C', sub:'주제 선택', type:'dilemma',
+    scenario:'학교 자유 탐구 주제를 정해야 한다. 두 가지 후보가 있다.',
+    q:'너는 어떤 주제를 고르는 편인가?',
+    options:[
+      {t:'인터넷에서 자료가 많아 쉽게 보고서를 쓸 수 있는 흔한 주제', s:2},
+      {t:'자료는 적지만 평소 진심으로 궁금했던 주제', s:5},
+      {t:'친구가 이미 한 적 있어 답을 빌릴 수 있는 주제', s:1},
+      {t:'가장 빨리 끝낼 수 있는 주제', s:1}
+    ]},
+  { area:'C', sub:'시간 우선순위', type:'dilemma',
+    scenario:'평소 좋아하던 과학 다큐멘터리 신작이 친구들과의 게임 약속과 같은 시간에 방영된다.',
+    q:'너의 행동에 가장 가까운 것은?',
+    options:[
+      {t:'친구와의 약속을 미루고 다큐를 본다', s:2},
+      {t:'친구들과 양해를 구해 시간을 조정하거나 녹화·다시보기로 균형 있게 챙긴다', s:5},
+      {t:'다큐는 잊고 친구들과만 시간을 보낸다', s:3},
+      {t:'어차피 둘 다 하기 힘드니 둘 다 하지 않는다', s:1}
+    ]},
+  { area:'C', sub:'학습 정직성', type:'dilemma',
+    scenario:'학원에서 새 단원의 풀이를 들었지만 솔직히 70%만 이해됐다.',
+    q:'너는 어떻게 하는가?',
+    options:[
+      {t:'"이해됐다"고 답하고 넘어간다', s:1},
+      {t:'일단 외워서 다음 시험까지 해결한다', s:2},
+      {t:'어디까지 이해했는지 솔직히 말하고 막힌 부분을 다시 설명해 달라고 한다', s:5},
+      {t:'친구에게 따로 물어 다시 정리한다', s:4}
+    ]},
+  { area:'C', sub:'독서·학습', type:'dilemma',
+    scenario:'과학 잡지를 읽다가 너에게 어려운 최신 연구 요약문을 만났다.',
+    q:'너는 어떻게 하는 편인가?',
+    options:[
+      {t:'덮어 두고 다른 페이지를 본다', s:1},
+      {t:'모르는 용어와 개념을 검색·메모하며 끝까지 읽어 본다', s:5},
+      {t:'그림과 결론만 본다', s:3},
+      {t:'누가 설명해줄 때까지 미뤄둔다', s:2}
+    ]},
+  { area:'C', sub:'동기 강도', type:'dilemma',
+    scenario:'다음 중 가장 너를 들뜨게 만드는 것은 무엇인가? (가장 솔직한 1개)',
+    q:'',
+    options:[
+      {t:'새로운 과학적 발견·기술 뉴스', s:5},
+      {t:'좋아하는 가수·게임의 신작 발표', s:1},
+      {t:'친구와의 모임·여행', s:2},
+      {t:'학교에서 새 학기가 시작되는 날', s:3}
+    ]},
+  { area:'C', sub:'진로 상상', type:'dilemma',
+    scenario:'10년 후 너의 모습을 자유롭게 떠올려 본다.',
+    q:'가장 자연스럽게 떠오르는 장면은?',
+    options:[
+      {t:'연구실에서 실험·분석을 하고 있는 모습', s:5},
+      {t:'사람들 앞에서 과학·기술을 설명·발표하는 모습', s:4},
+      {t:'사무실에서 일반 업무를 보는 모습', s:2},
+      {t:'아직 잘 떠오르지 않는다', s:3}
+    ]},
+  { area:'C', sub:'가족 갈등', type:'dilemma',
+    scenario:'부모님이 "과학고는 공부량이 너무 많아 힘들 수 있으니 일반고에서 내신을 챙기는 게 어떻겠니?"라고 하신다.',
+    q:'너의 솔직한 반응은?',
+    options:[
+      {t:'"부모님 말씀대로 따르겠다"', s:2},
+      {t:'"잘 모르겠다, 친구들이 가는 곳에 따라가겠다"', s:1},
+      {t:'"장단점을 함께 더 알아보고, 데이터로 같이 결정하자"고 제안한다', s:4},
+      {t:'"그래도 과학고에서 깊이 배우고 싶다"고 분명히 의사표시한다', s:5}
+    ]},
+  { area:'C', sub:'경쟁·자극', type:'dilemma',
+    scenario:'같은 학년에 너보다 수학·과학을 훨씬 잘하는 친구를 만났다.',
+    q:'너의 자연스러운 반응은?',
+    options:[
+      {t:'의기소침해진다', s:1},
+      {t:'그 친구를 피하고 비교하지 않으려 한다', s:2},
+      {t:'그 친구를 따라잡고 싶은 자극을 받아 더 노력한다', s:5},
+      {t:'그 친구에게 배움을 청하고 함께 공부하자고 제안한다', s:5}
+    ]},
+  { area:'C', sub:'학습 방식', type:'dilemma',
+    scenario:'1년 후 큰 시험에서 좋은 결과를 내야 한다는 목표가 있다.',
+    q:'너에게 가장 잘 맞을 학습 방식은?',
+    options:[
+      {t:'학원·과외에 의존해 시키는 대로 따라간다', s:2},
+      {t:'스스로 큰 계획을 세우고, 부족한 영역만 외부 도움을 받는다', s:5},
+      {t:'친구와 같이 도서관에서 시간만 채우는 방식', s:3},
+      {t:'시험 직전에 단기간 집중해서 끝낸다', s:1}
+    ]},
+
+  /* ---------- D. 자기주도·인성 (10) - 딜레마 상황 ---------- */
+  { area:'D', sub:'자기조절', type:'dilemma',
+    scenario:'시험 공부를 하다가 너무 졸리다. 친구는 "오늘 일찍 자고 내일 더 하자"고 한다.',
+    q:'너는 어떻게 하는가?',
+    options:[
+      {t:'친구 말대로 바로 잔다', s:3},
+      {t:'무리해서 새벽까지 계속한다', s:2},
+      {t:'"30분만 더 정리하고 자자"며 마무리한 뒤 일찍 잔다', s:5},
+      {t:'공부를 멈추고 다른 즐거운 일을 한다', s:1}
+    ]},
+  { area:'D', sub:'협업·갈등', type:'dilemma',
+    scenario:'모둠 과제에서 한 친구가 자기 몫을 거의 하지 않고 있다.',
+    q:'너는 어떻게 대응하는가?',
+    options:[
+      {t:'"왜 안 하느냐"고 따져 묻는다', s:2},
+      {t:'결국 너 혼자 다 해버린다', s:2},
+      {t:'그 친구가 무엇이 어려운지 먼저 묻고, 분담을 다시 정한다', s:5},
+      {t:'선생님께 즉시 이른다', s:3}
+    ]},
+  { area:'D', sub:'끈기', type:'dilemma',
+    scenario:'어려운 수학 문제를 1시간 동안 풀어도 답이 나오지 않는다.',
+    q:'너의 자연스러운 행동은?',
+    options:[
+      {t:'풀이집을 본다', s:2},
+      {t:'잠시 쉬었다가 다른 접근법으로 다시 시도한다', s:5},
+      {t:'포기하고 다른 문제로 넘어간다', s:3},
+      {t:'친구에게 답만 묻는다', s:1}
+    ]},
+  { area:'D', sub:'학습 성찰', type:'dilemma',
+    scenario:'시험에서 한 문제를 외운 답으로 운 좋게 맞췄다. 풀이 과정은 사실 모른다.',
+    q:'너는 어떻게 하는가?',
+    options:[
+      {t:'채점이 잘 됐으니 만족한다', s:1},
+      {t:'다음에는 풀이를 정확히 이해해 두려고 따로 정리한다', s:5},
+      {t:'잊어버린다', s:2},
+      {t:'친구에게 자랑한다', s:1}
+    ]},
+  { area:'D', sub:'토론·합의', type:'dilemma',
+    scenario:'새 학기 첫 모둠에서 처음 만난 친구와 의견이 다르다.',
+    q:'너의 자연스러운 행동은?',
+    options:[
+      {t:'내 의견을 강하게 끝까지 주장한다', s:2},
+      {t:'그냥 친구 의견에 맞춘다', s:2},
+      {t:'서로 의견과 근거를 들어본 뒤, 더 타당한 쪽을 선택한다', s:5},
+      {t:'다툼이 싫어 모둠에서 빠진다', s:1}
+    ]},
+  { area:'D', sub:'메타인지', type:'dilemma',
+    scenario:'한 주의 학습 계획을 세웠는데 첫 주에 70%만 달성했다.',
+    q:'너의 다음 행동은?',
+    options:[
+      {t:'좌절해서 다음 주는 손을 놓는다', s:1},
+      {t:'무엇이 안 됐는지 분석하고 계획을 현실적으로 조정한다', s:5},
+      {t:'그대로 다음 주에도 같은 계획을 쓴다', s:3},
+      {t:'더 많은 분량으로 계획을 늘려 본다', s:2}
+    ]},
+  { area:'D', sub:'정직·윤리', type:'dilemma',
+    scenario:'친한 선배가 시험 출제 정보를 너에게만 알려줬다. 친구가 "혹시 들은 거 없어?"라고 묻는다.',
+    q:'너는 어떻게 행동하는가?',
+    options:[
+      {t:'친구에게 알려준다', s:1},
+      {t:'나만 알고 친구에게는 말하지 않는다', s:2},
+      {t:'"이건 부정행위 같다"며 둘 다 그 정보를 사용하지 않기로 한다', s:5},
+      {t:'들었지만 못 들은 척한다', s:2}
+    ]},
+  { area:'D', sub:'도전·용기', type:'dilemma',
+    scenario:'발표 준비를 잘 했는데 발표 직전 너무 떨려 도망치고 싶다.',
+    q:'너의 행동은?',
+    options:[
+      {t:'결국 도망친다', s:1},
+      {t:'두려움을 인정하고 떨리는 채로 그대로 발표한다', s:5},
+      {t:'다른 친구에게 발표를 부탁한다', s:2},
+      {t:'적당히 얼버무리며 짧게 끝낸다', s:2}
+    ]},
+  { area:'D', sub:'상호성', type:'dilemma',
+    scenario:'시험 기간에 한 친구가 매번 네 정리 노트를 그대로 베껴간다.',
+    q:'너는 어떻게 대응하는가?',
+    options:[
+      {t:'그냥 계속 빌려준다', s:2},
+      {t:'노트를 안 보여준다', s:2},
+      {t:'"같이 정리해보자, 도와줄게"라고 제안하며 함께 학습 습관을 바꾼다', s:5},
+      {t:'다른 친구들에게 그 친구 험담을 한다', s:1}
+    ]},
+  { area:'D', sub:'장기 약속', type:'dilemma',
+    scenario:'6개월간 매주 일요일 오후를 자유 탐구 활동에 쓰기로 결심했다. 두 달이 지나니 친구 모임 등으로 점점 빠지고 싶다.',
+    q:'너의 행동은?',
+    options:[
+      {t:'결심을 포기한다', s:1},
+      {t:'시간을 다른 요일로 옮기더라도 활동 자체는 유지한다', s:5},
+      {t:'빈도를 격주로 줄이되 계속 한다', s:4},
+      {t:'친구 모임을 모두 거절하고 자기를 고립시킨다', s:2}
+    ]}
+];
+
+const AREA_INFO = {
+  A:{ name:'수학·과학 개념 정확성', max:15, code:'A',
+      desc:'중학 핵심 개념·정의를 정확히 이해하고 있는지를 측정합니다.' },
+  B:{ name:'과학적 사고력·탐구력',  max:15, code:'B',
+      desc:'전국 주요 과학고 기출 스타일로 자료해석·변인통제·다단계 추론·통계적 사고를 측정합니다.' },
+  C:{ name:'흥미·진로 적합성',       max:10, code:'C',
+      desc:'딜레마 상황에서의 선택을 통해 과학에 대한 진심 어린 동기·진로 지향성을 측정합니다.' },
+  D:{ name:'자기주도 학습·인성',     max:10, code:'D',
+      desc:'딜레마 상황에서의 선택을 통해 자기조절·끈기·정직·협업·메타인지를 측정합니다.' }
+};
+
+/* =================================================================
+   상태
+   ================================================================= */
+let answers   = new Array(Q.length).fill(null);
+let cur       = 0;
+let studentInfo = null;
+
+/* =================================================================
+   화면 전환
+   ================================================================= */
+const S = id => document.getElementById(id);
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(el=>el.classList.remove('active'));
+  S(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* =================================================================
+   학생 정보 검증
+   ================================================================= */
+const REGEX = {
+  name:   /^[가-힣]{2,15}$|^[A-Za-z\s]{2,40}$/,
+  school: /^[가-힣A-Za-z0-9\s]{2,40}$/,
+  phone:  /^01[016789]-?\d{3,4}-?\d{4}$/
+};
+function validate(){
+  const v = {
+    name:      S('f_name').value.trim(),
+    school:    S('f_school').value.trim(),
+    grade:     S('f_grade').value,
+    region:    S('f_region').value,
+    regionEtc: S('f_region_etc').value.trim(),
+    phone:     S('f_phone').value.trim(),
+    parent:    S('f_parent').value.trim(),
+    consent:   S('f_consent').checked
+  };
+  const err = {name:'', school:'', grade:'', region:'', regionEtc:'', phone:'', parent:''};
+  if (!v.name)                                    err.name   = '이름을 입력해 주세요.';
+  else if (!REGEX.name.test(v.name))              err.name   = '실명을 정확히 입력해 주세요(닉네임·약칭 불가).';
+  if (!v.school)                                  err.school = '학교명을 입력해 주세요.';
+  else if (!REGEX.school.test(v.school))          err.school = '학교명을 정확히 입력해 주세요.';
+  if (!v.grade)                                   err.grade  = '학년을 선택해 주세요.';
+  if (!v.region)                                  err.region = '거주 지역을 선택해 주세요.';
+  if (v.region === '기타' && !v.regionEtc)        err.regionEtc = '기타 선택 시 시·군명을 입력해 주세요.';
+  if (!v.phone)                                   err.phone  = '학생 연락처를 입력해 주세요.';
+  else if (!REGEX.phone.test(v.phone))            err.phone  = '010-0000-0000 형식으로 입력해 주세요.';
+  if (!v.parent)                                  err.parent = '학부모 연락처를 입력해 주세요.';
+  else if (!REGEX.phone.test(v.parent))           err.parent = '010-0000-0000 형식으로 입력해 주세요.';
+  S('e_name').textContent       = err.name;
+  S('e_school').textContent     = err.school;
+  S('e_grade').textContent      = err.grade;
+  S('e_region').textContent     = err.region;
+  S('e_region_etc').textContent = err.regionEtc;
+  S('e_phone').textContent      = err.phone;
+  S('e_parent').textContent     = err.parent;
+  if (!v.consent){ alert('개인정보 수집·이용에 동의가 필요합니다.'); return null; }
+  if (Object.values(err).some(x=>x)) return null;
+  // 정규화
+  v.regionLabel = v.region === '기타'
+    ? `기타 (${v.regionEtc})`
+    : (v.region === '광교' ? '광교(수원 영통)'
+       : v.region === '수원' ? '수원(광교 외)'
+       : v.region + '시');
+  return v;
+}
+// 지역 드롭다운 변경 시 "기타" 입력칸 토글
+document.addEventListener('DOMContentLoaded', ()=>{
+  const sel = S('f_region');
+  if (sel) sel.addEventListener('change', ()=>{
+    S('regionEtcWrap').style.display = (sel.value === '기타') ? 'flex' : 'none';
+  });
+});
+
+S('btnStart').addEventListener('click', ()=>{
+  const v = validate();
+  if (!v) return;
+  studentInfo = v;
+  answers = new Array(Q.length).fill(null);
+  cur = 0;
+  showScreen('screen-quiz');
+  renderQ();
+});
+
+/* =================================================================
+   문항 렌더링
+   ================================================================= */
+function renderQ(){
+  const q = Q[cur];
+  const ai = AREA_INFO[q.area];
+  S('qSection').textContent = `영역 ${q.area} · ${ai.name} — ${q.sub}`;
+  S('qCount').textContent   = `Q ${cur+1} / ${Q.length}`;
+  S('qScenario').innerHTML  = q.scenario
+    ? `<div class="scenario"><b>상황 · </b>${q.scenario}</div>`
+    : '';
+  S('qText').textContent = q.q || '가장 솔직한 한 가지를 선택해 주세요.';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'options';
+  q.options.forEach((opt, i)=>{
+    const lab = document.createElement('div');
+    lab.className = 'option' + (answers[cur]===i ? ' selected':'');
+    lab.innerHTML = `<div class="marker">${String.fromCharCode(65+i)}</div>
+                     <div class="otext">${opt.t}</div>`;
+    lab.addEventListener('click', ()=>{
+      answers[cur] = i;
+      S('btnNext').disabled = false;
+      [...wrap.children].forEach(c=>c.classList.remove('selected'));
+      lab.classList.add('selected');
+    });
+    wrap.appendChild(lab);
+  });
+  const oc = S('qOptions');
+  oc.innerHTML = '';
+  oc.appendChild(wrap);
+
+  S('btnPrev').disabled = (cur===0);
+  S('btnNext').disabled = (answers[cur]===null);
+  S('btnNext').textContent = (cur === Q.length-1) ? '제출하기' : '다음 →';
+  S('progressBar').style.width = ((cur+1)/Q.length*100) + '%';
+}
+S('btnPrev').addEventListener('click', ()=>{
+  if (cur>0){ cur--; renderQ(); }
+});
+S('btnNext').addEventListener('click', ()=>{
+  if (cur < Q.length-1){ cur++; renderQ(); }
+  else submit();
+});
+
+/* =================================================================
+   채점·등급
+   ================================================================= */
+function score(submission){
+  const s = {A:0,B:0,C:0,D:0};
+  Q.forEach((q,i)=>{
+    const idx = submission.answers[i];
+    if (idx === null || idx === undefined) return;
+    s[q.area] += q.options[idx].s;
+  });
+  // C, D 영역은 50점 만점 → 10점 환산 (1자리 반올림)
+  s.C = Math.round((s.C/50)*10*10)/10;
+  s.D = Math.round((s.D/50)*10*10)/10;
+  s.total = +(s.A + s.B + s.C + s.D).toFixed(1);
+  s.pct   = Math.round((s.total/50)*100);
+  return s;
+}
+function grade(scores){
+  const t = scores.total;
+  if (t >= 45) return {code:'S', label:'매우 우수', cls:'grade-S',
+    desc:'영재학교·전국단위 최상위권 과학고를 직접 도전해 볼 수 있는 단계입니다.'};
+  if (t >= 38) return {code:'A', label:'우수', cls:'grade-A',
+    desc:'경기형 3개 과학고(경기북·분당중앙·부천)에 적극 도전할 수 있는 단계입니다.'};
+  if (t >= 30) return {code:'B', label:'양호', cls:'grade-B',
+    desc:'과학고 도전이 충분히 가능한 단계로, 1~2개 영역의 보완이 필요합니다.'};
+  if (t >= 22) return {code:'C', label:'보통', cls:'grade-C',
+    desc:'과학중점학교·자율형 일반고 우선 진학 후 재진단을 권장합니다.'};
+  return {code:'D', label:'보완 필요', cls:'grade-D',
+    desc:'현 단계에서는 일반고 진학을 권장하며, 흥미·동기 측면을 다시 탐색할 필요가 있습니다.'};
+}
+
+/* =================================================================
+   제출 (학생에게는 결과 비공개, localStorage 누적)
+   ================================================================= */
+function submit(){
+  const sub = {
+    id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+    submittedAt: new Date().toISOString(),
+    info: studentInfo,
+    answers: answers.slice(),
+    kitVersion: KIT_VERSION
+  };
+  // 점수·등급 미리 계산해 저장
+  sub.scores = score(sub);
+  sub.grade  = grade(sub.scores).code;
+
+  const list = loadAll();
+  list.push(sub);
+  saveAll(list);
+
+  // Google Sheets 자동 전송 (URL이 설정된 경우만, 백그라운드)
+  if (SHEETS_ENDPOINT_URL) sendToSheets(sub);
+
+  S('doneName').textContent = studentInfo.name;
+  showScreen('screen-done');
+  S('progressBar').style.width = '100%';
+}
+
+/* Google Sheets로 1건 자동 전송 — 실패해도 학생 흐름은 막지 않음
+   URL-encoded form 형식 사용 (Apps Script POST에서 가장 안정적, CORS·리다이렉트 회피) */
+function sendToSheets(sub){
+  try {
+    const sc = sub.scores;
+    const m  = schoolMatch3(sc, sub.info, grade(sc));
+    const payload = {
+      id: sub.id,
+      submittedAt: sub.submittedAt,
+      name: sub.info.name, school: sub.info.school, grade: sub.info.grade,
+      regionLabel: sub.info.regionLabel || sub.info.region || '',
+      phone: sub.info.phone, parent: sub.info.parent,
+      gradeCode: sub.grade,
+      total: sc.total, pct: sc.pct,
+      A: sc.A, B: sc.B, C: sc.C, D: sc.D,
+      school1: m.ranked[0].name, school1_pct: m.ranked[0].pct,
+      school2: m.ranked[1].name, school2_pct: m.ranked[1].pct,
+      school3: m.ranked[2].name, school3_pct: m.ranked[2].pct,
+      kitVersion: sub.kitVersion,
+      answers: JSON.stringify(sub.answers)
+    };
+    // application/x-www-form-urlencoded 로 전송 (preflight 없음 + Apps Script e.parameter.data 로 안정 수신)
+    const body = new URLSearchParams();
+    body.append('data', JSON.stringify(payload));
+    fetch(SHEETS_ENDPOINT_URL, { method:'POST', body: body })
+      .then(r => { console.log('[Sheets POST] status:', r.status, r.statusText); })
+      .catch(err => { console.warn('[Sheets POST] network error:', err); });
+  } catch(e){ console.warn('[Sheets POST] payload error:', e); }
+}
+
+/* 운영자 모드: 로컬에만 있는 응답을 시트로 일괄 업로드 (URL 적용 이전에 들어온 응답 회수용) */
+async function pushAllLocalToSheets(){
+  if (!SHEETS_ENDPOINT_URL) { alert('SHEETS_ENDPOINT_URL이 비어 있습니다.'); return; }
+  const list = loadAll();
+  if (list.length === 0) { alert('로컬에 업로드할 응답이 없습니다.'); return; }
+  if (!confirm(`로컬의 ${list.length}건을 시트로 일괄 업로드하시겠습니까?\n(시트에 이미 있는 동일 id 응답은 중복 행으로 추가될 수 있습니다.)`)) return;
+  let ok = 0, fail = 0;
+  for (const sub of list){
+    try { sendToSheets(sub); ok++; }
+    catch(e){ fail++; }
+    // Apps Script 동시처리 한도 회피 — 작은 간격
+    await new Promise(r => setTimeout(r, 250));
+  }
+  alert(`업로드 시도 완료\n· 성공 ${ok}건 · 실패 ${fail}건\n시트를 새로고침해 확인해 주세요.`);
+}
+S('btnRestartStudent').addEventListener('click', ()=>{
+  // 새 학생을 위해 폼 리셋
+  ['f_name','f_school','f_phone','f_parent','f_region_etc'].forEach(id=> S(id).value='');
+  S('f_grade').value='';
+  S('f_region').value='';
+  S('regionEtcWrap').style.display='none';
+  S('f_consent').checked=false;
+  ['e_name','e_school','e_grade','e_region','e_region_etc','e_phone','e_parent'].forEach(id=> S(id).textContent='');
+  studentInfo=null; answers=new Array(Q.length).fill(null); cur=0;
+  S('progressBar').style.width = '0%';
+  showScreen('screen-info');
+});
+
+/* =================================================================
+   localStorage I/O
+   ================================================================= */
+function loadAll(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch(e){ return []; }
+}
+function saveAll(list){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+/* =================================================================
+   운영자 인증
+   ================================================================= */
+S('adminEntry').addEventListener('click', ()=>{
+  S('adminPw').value='';
+  S('modalBg').classList.add('active');
+  setTimeout(()=>S('adminPw').focus(),100);
+});
+S('modalCancel').addEventListener('click', ()=>S('modalBg').classList.remove('active'));
+S('modalOk').addEventListener('click', tryAdminLogin);
+S('adminPw').addEventListener('keydown', e=>{ if(e.key==='Enter') tryAdminLogin(); });
+function tryAdminLogin(){
+  if (S('adminPw').value === ADMIN_PASSWORD){
+    S('modalBg').classList.remove('active');
+    enterAdmin();
+  } else {
+    alert('비밀번호가 일치하지 않습니다.');
+  }
+}
+S('btnAdminExit').addEventListener('click', ()=> showScreen('screen-info'));
+
+/* =================================================================
+   운영자 대시보드
+   ================================================================= */
+function enterAdmin(){
+  renderAdminList();
+  showScreen('screen-admin');
+}
+function renderAdminList(){
+  const list = loadAll().sort((a,b)=> b.submittedAt.localeCompare(a.submittedAt));
+  // 통계
+  const stats = {S:0,A:0,B:0,C:0,D:0};
+  list.forEach(x=>{ stats[x.grade]=(stats[x.grade]||0)+1; });
+  const sr = S('adminStats');
+  sr.innerHTML = `
+    <div class="stat-card"><div class="l">총 응시자</div><div class="v">${list.length}명</div></div>
+    <div class="stat-card"><div class="l">S 등급</div><div class="v">${stats.S}</div></div>
+    <div class="stat-card"><div class="l">A 등급</div><div class="v">${stats.A}</div></div>
+    <div class="stat-card"><div class="l">B 등급</div><div class="v">${stats.B}</div></div>
+    <div class="stat-card"><div class="l">C·D 등급</div><div class="v">${stats.C+stats.D}</div></div>
+  `;
+  const cont = S('adminList');
+  if (list.length === 0){
+    cont.innerHTML = `<div class="empty">아직 제출된 응답이 없습니다. 학생이 진단을 마치면 여기 표시됩니다.</div>`;
+    return;
+  }
+  let html = `<table class="list"><thead><tr>
+      <th>제출일시</th><th>이름</th><th>학교</th><th>학년</th>
+      <th>총점</th><th>등급</th><th>연락처</th></tr></thead><tbody>`;
+  list.forEach(x=>{
+    const d = new Date(x.submittedAt);
+    const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const gr = grade(x.scores);
+    html += `<tr data-id="${x.id}">
+      <td>${ds}</td>
+      <td><b>${x.info.name}</b></td>
+      <td>${x.info.school}</td>
+      <td>${x.info.grade}</td>
+      <td>${x.scores.total} / 50</td>
+      <td><span class="grade-badge ${gr.cls}">${gr.code} · ${gr.label}</span></td>
+      <td>${x.info.phone}</td>
+    </tr>`;
+  });
+  html += `</tbody></table>`;
+  cont.innerHTML = html;
+  cont.querySelectorAll('tr[data-id]').forEach(tr=>{
+    tr.addEventListener('click', ()=> openReport(tr.dataset.id));
+  });
+}
+
+/* =================================================================
+   상세 리포트
+   ================================================================= */
+function openReport(id){
+  const sub = loadAll().find(x=>x.id===id);
+  if (!sub) return;
+  S('reportBody').innerHTML = renderReport(sub);
+  showScreen('screen-report');
+}
+S('btnReportBack').addEventListener('click', ()=> { renderAdminList(); showScreen('screen-admin'); });
+
+/* 인쇄 모드 토글 — body[data-print-mode] 로 학생용/운영자용/전체 분기 */
+function doPrint(mode){
+  document.body.dataset.printMode = mode;   // 'student' | 'admin' | 'both'
+  // 인쇄 다이얼로그가 뜨고 닫힌 뒤 초기화하기 위해 약간 지연
+  setTimeout(()=> {
+    window.print();
+    setTimeout(()=> { delete document.body.dataset.printMode; }, 800);
+  }, 80);
+}
+S('btnPrintStudent').addEventListener('click', ()=> doPrint('student'));
+S('btnPrintAdmin')  .addEventListener('click', ()=> doPrint('admin'));
+S('btnPrintBoth')   .addEventListener('click', ()=> doPrint('both'));
+
+function renderReport(sub){
+  return renderStudentReport(sub) + renderAdminReport(sub);
+}
+
+/* ============== 학생용 결과지 (학생·학부모 공유용) ============== */
+function renderStudentReport(sub){
+  const sc = score(sub);
+  const gr = grade(sc);
+  const d = new Date(sub.submittedAt);
+  const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const m = schoolMatch3(sc, sub.info, gr);
+  const top = m.ranked[0];
+
+  let html = `<div class="student-report">`;
+
+  // 1) 헤더 (학생용 — 연락처 미노출)
+  html += `
+  <div class="report-section">
+    <div class="report-head">
+      <div>
+        <h3>${sub.info.name} <span style="font-weight:500;color:var(--ink-mute);font-size:14px;">· ${sub.info.school} ${sub.info.grade}</span></h3>
+        <div class="info"><b>거주지역</b> ${sub.info.regionLabel || sub.info.region || '-'} · <b>진단일</b> ${ds}</div>
+        <div class="info" style="margin-top:4px;">과학고 적합성 종합 진단 결과지 (학생용)</div>
+      </div>
+      <div class="right">
+        <div class="total">${sc.total}<span>/ 50 (${sc.pct}%)</span></div>
+        <span class="grade-badge ${gr.cls}" style="margin-top:6px;font-size:13px;padding:5px 14px;">등급 ${gr.code} · ${gr.label}</span>
+      </div>
+    </div>
+  </div>`;
+
+  // 2) 영역별 점수 카드 (학생용 — 강점·보완 코멘트는 격려 톤)
+  html += `<div class="report-section">
+    <h4 class="section-title">영역별 점수</h4>
+    <div class="area-grid">`;
+  ['A','B','C','D'].forEach(a=>{
+    const ai = AREA_INFO[a];
+    const s = sc[a];
+    const pct = Math.round((s/ai.max)*100);
+    html += `
+      <div class="area-card">
+        <div class="top">
+          <h5>${a}. ${ai.name}</h5>
+          <div class="score">${s.toFixed(1)}<span class="max"> / ${ai.max}</span></div>
+        </div>
+        <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
+        <div class="pct">${pct}% · ${ai.desc}</div>
+      </div>`;
+  });
+  html += `</div></div>`;
+
+  // 3) 강점·보완 한 줄 요약
+  const strong = strongest(sc), weak = weakest(sc);
+  html += `<div class="report-section">
+    <h4 class="section-title">나의 강점 · 보완점</h4>
+    <div class="guide-box">
+      <div class="row"><div class="lbl">강점</div>
+        <div class="body"><b style="color:var(--good);">${strong.label}</b> · ${strong.pct}% — ${areaShortPraise(strong.code)}</div></div>
+      <div class="row"><div class="lbl">보완점</div>
+        <div class="body"><b style="color:var(--accent-2);">${weak.label}</b> · ${weak.pct}% — ${areaShortAdvice(weak.code)}</div></div>
+    </div>
+  </div>`;
+
+  // 4) 추천 학교 (학생용 — 간략)
+  html += `<div class="report-section">
+    <h4 class="section-title">추천 학교 (1~3순위)</h4>
+    <div class="guide-box" style="padding:12px 14px;">
+      <table class="school-table"><thead><tr>
+        <th>순위</th><th>학교</th><th>매칭률</th><th>합격 가능성</th>
+      </tr></thead><tbody>
+      ${m.ranked.map((r,i)=>`<tr>
+        <td><b>${i+1}순위</b></td>
+        <td><b>${r.name}</b><div class="muted">${r.sch.locCity}</div></td>
+        <td><span class="match-pct ${r.tier.cls}">${r.pct}%</span></td>
+        <td>${r.tier.label} <span class="stars-sm">${'★'.repeat(r.tier.stars)}${'☆'.repeat(5-r.tier.stars)}</span></td>
+      </tr>`).join('')}
+      </tbody></table>
+      <div style="margin-top:14px;padding:12px 14px;background:var(--bg-soft);border-radius:10px;font-size:13.5px;color:var(--ink-soft);">
+        <b style="color:var(--ink);">1순위 ${top.name}</b> — ${top.tier.desc}
+      </div>
+    </div>
+  </div>`;
+
+  // 5) 격려·다음 단계 메시지
+  html += `<div class="report-section">
+    <div class="student-encouragement">
+      <h4>${sub.info.name} 학생에게</h4>
+      <p>${studentMessage(sc, gr, sub.info.name)}</p>
+    </div>
+  </div>`;
+
+  // 6) 서명·진단 라인
+  html += `<div class="signature-row">
+    <span><b>진단키트</b> ${sub.kitVersion}</span>
+    <span>운영자(상담): ____________________</span>
+  </div>`;
+
+  html += `</div>`; // close .student-report
+  return html;
+}
+
+/* ============== 운영자용 결과지 (상담실 내부용) ============== */
+function renderAdminReport(sub){
+  const sc = score(sub);
+  const gr = grade(sc);
+  const d = new Date(sub.submittedAt);
+  const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+
+  let html = `<div class="admin-report">`;
+
+  // 인쇄 시 표지 헤더 (화면에서는 숨김, 인쇄에서만 표시)
+  html += `<div class="admin-report-cover">
+    <div style="font-size:11px;color:#A2421C;letter-spacing:.1em;font-weight:700;margin-bottom:6px;">CONFIDENTIAL · 운영자 전용</div>
+    <div style="font-size:18px;font-weight:700;">과학고 적합성 진단 — 상세 분석 리포트</div>
+    <div style="font-size:12px;color:#6B6856;margin-top:6px;">대상: ${sub.info.name} · ${sub.info.school} ${sub.info.grade} / 진단일 ${ds}</div>
+  </div>`;
+
+  // 1) 학생 전체 정보 (연락처 포함)
+  html += `<div class="report-section">
+    <div class="report-head">
+      <div>
+        <h3>${sub.info.name} <span style="font-weight:500;color:var(--ink-mute);font-size:14px;">· ${sub.info.school} ${sub.info.grade}</span></h3>
+        <div class="info"><b>거주지역</b> ${sub.info.regionLabel || sub.info.region || '-'}</div>
+        <div class="info"><b>연락처</b> 학생 ${sub.info.phone} · 학부모 ${sub.info.parent || '-'}</div>
+        <div class="info"><b>제출일시</b> ${ds} · <b>키트 버전</b> ${sub.kitVersion}</div>
+      </div>
+      <div class="right">
+        <div class="total">${sc.total}<span>/ 50 (${sc.pct}%)</span></div>
+        <span class="grade-badge ${gr.cls}" style="margin-top:6px;font-size:13px;padding:5px 14px;">등급 ${gr.code} · ${gr.label}</span>
+      </div>
+    </div>
+  </div>`;
+
+  // 2) 영역별 점수 + verdict
+  html += `<div class="report-section">
+    <h4 class="section-title">영역별 점수 — 운영자용 분석</h4>
+    <div class="area-grid">`;
+  ['A','B','C','D'].forEach(a=>{
+    const ai = AREA_INFO[a];
+    const s = sc[a];
+    const pct = Math.round((s/ai.max)*100);
+    html += `
+      <div class="area-card">
+        <div class="top">
+          <h5>${a}. ${ai.name}</h5>
+          <div class="score">${s.toFixed(1)}<span class="max"> / ${ai.max}</span></div>
+        </div>
+        <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
+        <div class="pct">${pct}% · ${ai.desc}</div>
+        <div class="verdict">${areaVerdict(a, s, ai.max)}</div>
+      </div>`;
+  });
+  html += `</div></div>`;
+
+  // 3) 종합 진단
+  html += `<div class="report-section">
+    <h4 class="section-title">종합 진단 코멘트</h4>
+    <div class="guide-box">
+      <p><strong>등급 ${gr.code} (${gr.label})</strong> · 총점 ${sc.total} / 50 (${sc.pct}%) · ${gr.desc}</p>
+      <p>${overallComment(sc, gr, sub.info.name)}</p>
+    </div>
+  </div>`;
+
+  // 4) 학습·진로 처방
+  html += `<div class="report-section">
+    <h4 class="section-title">학습·진로 추천 처방</h4>
+    <div class="guide-box">${prescription(sc, gr, sub.info)}</div>
+  </div>`;
+
+  // 5) 3개 학교 매칭 — 핵심
+  html += `<div class="report-section">
+    <h4 class="section-title">경기형 3개 과학고 매칭 분석</h4>
+    <div class="guide-box">${schoolMatchHTML(sc, sub.info, gr)}</div>
+  </div>`;
+
+  // 6) 학부모 상담 가이드
+  html += `<div class="report-section">
+    <h4 class="section-title">학부모 상담 가이드</h4>
+    <div class="guide-box">${parentGuide(sc, gr, sub.info.name)}</div>
+  </div>`;
+
+  // 7) 문항별 응답 상세
+  html += `<div class="report-section">
+    <h4 class="section-title">문항별 응답 상세 (50문항)</h4>
+    ${responseTable(sub)}
+  </div>`;
+
+  html += `</div>`; // close .admin-report
+  return html;
+}
+
+/* 학생용 — 강점/보완 짧은 멘트 */
+function areaShortPraise(code){
+  return ({
+    A:'중학 핵심 개념·정의를 정확히 이해하고 있어요. 심화 학습으로 한 단계 더 나아갈 수 있습니다.',
+    B:'자료 해석과 추론 사고가 빛납니다. 이 강점은 과학고 면접·서술형 평가에서 큰 무기가 됩니다.',
+    C:'과학에 대한 진심 어린 호기심과 진로 의사가 분명합니다. 이런 동기는 가장 큰 자산입니다.',
+    D:'스스로 계획하고 끈기 있게 실천하는 힘이 있습니다. 신설 과학고의 자율적 환경에 잘 어울립니다.'
+  })[code];
+}
+function areaShortAdvice(code){
+  return ({
+    A:'개념·정의를 다시 한 번 정독하면 점수가 가장 빠르게 오릅니다. 단원별 요약 노트 만들기를 추천해요.',
+    B:'기출 자료해석·실험설계 문항을 매주 5문항씩만 꾸준히 풀어 보세요. 사고의 절차가 빠르게 자리잡습니다.',
+    C:'과학관·연구실 탐방, 과학 다큐 시청 등 직간접 체험을 늘리면 진로 동기가 더 단단해집니다.',
+    D:'주간 학습 일지 + 30일 작은 약속 챌린지로 자기관리 근육을 키워 보세요.'
+  })[code];
+}
+
+/* 학생용 — 격려 메시지 */
+function studentMessage(sc, gr, name){
+  const top = schoolMatch3(sc, {region:'',regionEtc:''}, gr).ranked[0]; // generic for tone
+  switch(gr.code){
+    case 'S': return `${name} 학생, 정말 멋진 결과예요! 모든 영역에서 안정적인 실력을 보여주었고, 영재학교(경기과학고 등)와 경기형 3개 과학고(경기북·분당중앙·부천) 모두에 도전할 수 있는 단계입니다. 너무 무리하지 말고, 좋아하는 분야의 R&E 프로젝트를 한 번 진행해 보세요. 그 경험이 자기소개서의 가장 빛나는 한 줄이 될 거예요.`;
+    case 'A': return `${name} 학생, 충분히 자랑스러운 결과입니다. 경기 지역 과학고(경기북·분당중앙·부천)에 도전할 수 있는 단계예요. 약점 한두 영역만 6개월 집중 보완하면 합격 안정권에 들어갈 수 있어요. 지금까지 해온 것처럼 꾸준함을 잃지 마세요.`;
+    case 'B': return `${name} 학생, 과학고 도전이 충분히 가능한 단계입니다. 다만 한 영역의 보완이 필요한데, 그 부분만 다음 6개월 동안 집중하면 합격선을 안정적으로 넘길 수 있어요. 거주 지역과 매칭률이 가장 높은 학교를 1순위로 두고, 두 번째 학교를 보험으로 함께 검토하는 듀얼 트랙 입시 전략이 안전합니다.`;
+    case 'C': return `${name} 학생, 잠재력은 분명히 있습니다. 다만 지금 시점에서는 과학고 즉시 도전보다는 1년 정도 기초를 다지면서 자기 흥미를 더 깊이 들여다보는 것이 좋겠어요. 과학중점학교나 자율형 일반고에서 충분히 좋은 결과를 만들 수 있고, 6개월 후 다시 진단해 보면 성장이 분명히 보일 거예요.`;
+    default:  return `${name} 학생, 진단에 성실히 응해주어 고마워요. 결과가 기대보다 낮을 수도 있지만, 모든 사람의 길이 같지 않다는 것을 기억해요. 과학뿐 아니라 다양한 분야가 있고, ${name} 학생에게 더 잘 맞는 길이 있을 수 있어요. 지금은 학년 학습을 차근차근 해나가면서 천천히 자기 흥미를 찾아가도 충분합니다.`;
+  }
+}
+
+/* ----- 영역별 코멘트 ----- */
+function areaVerdict(a, s, max){
+  const r = s/max;
+  const map = {
+    A:{
+      hi:'개념·정의를 정확히 이해하고 있어 과학고 입학 후 심화 교과 학습에 안정적으로 적응할 수 있습니다.',
+      mi:'기본기는 갖추었으나 일부 영역에서 정의 혼동이 보입니다. 틀린 문항을 중심으로 개념서를 1회독 권장.',
+      lo:'개념·정의의 정확성에 빈틈이 큽니다. 중학 수학·과학 개념서를 단원별로 정독한 후 재진단이 필요합니다.'
+    },
+    B:{
+      hi:'자료해석·변인통제·다단계 추론에서 우수함. 주요 과학고 전형의 면접·서술형 평가에 충분한 기초.',
+      mi:'탐구의 일부 절차에서 실수가 있습니다. 경기북·전국 주요 과학고 기출 자료해석/추론형 문항을 30문항 이상 풀이 권장.',
+      lo:'과학적 사고의 절차를 다지는 것이 우선입니다. 학교 실험 보고서 작성·탐구토론 활동에 적극 참여 권장.'
+    },
+    C:{
+      hi:'딜레마 상황에서도 과학에 대한 진심 어린 동기와 자기 의사가 일관됩니다. 진로 정체성이 분명함.',
+      mi:'과학에 대한 흥미는 있으나 진로 의사결정의 일관성이 다소 약합니다. 진로검사·연구실 탐방 등 직간접 체험 권장.',
+      lo:'아직 과학 진로에 대한 강한 동기가 형성되지 않았습니다. 다른 분야와 함께 폭넓게 탐색해야 할 단계.'
+    },
+    D:{
+      hi:'자기조절·끈기·정직·협업·메타인지가 모두 우수. 과학고의 자율적 환경에 잘 적응할 학생.',
+      mi:'학습 태도는 양호하나 메타인지·갈등해결 영역에 다듬을 부분이 있습니다. 학습 일지·주간 회고 활용 권장.',
+      lo:'자기관리·협업·정직성 측면에서 의식적 훈련이 필요합니다. 작은 약속을 매일 지키는 훈련부터 시작.'
+    }
+  };
+  if (r >= 0.80) return map[a].hi;
+  if (r >= 0.60) return map[a].mi;
+  return map[a].lo;
+}
+
+/* ----- 종합 코멘트 ----- */
+function overallComment(sc, gr, name){
+  const weak = weakest(sc);
+  const strong = strongest(sc);
+  switch(gr.code){
+    case 'S': return `${name} 학생은 모든 영역에서 안정적이고 특히 ${strong.label} 영역이 두드러집니다. 영재학교(경기과학고 등)와 함께 경기형 3개 과학고(경기북·분당중앙·부천)에 모두 도전할 만한 잠재력을 갖추었습니다. 입시 전형 분석과 R&E 프로젝트 1건을 6개월 내 진행해 자기소개서의 핵심 활동으로 정리할 것을 권장합니다.`;
+    case 'A': return `${name} 학생은 ${strong.label} 영역의 강점과 함께 4개 영역 균형이 양호합니다. 경기형 3개 과학고(경기북·분당중앙·부천)에 적극 도전할 수 있는 단계로, ${weak.label} 영역만 1~2개월 집중 보완하면 합격 경쟁력을 높일 수 있습니다.`;
+    case 'B': return `${name} 학생은 과학고 도전이 충분히 가능한 단계입니다. 다만 ${weak.label} 영역의 ${weak.pct}% 비율이 낮은 편으로, 6개월 학습 플랜에서 이 영역에 50% 이상의 비중을 할애해야 합니다. 경기형 3개 과학고 중 매칭률이 높은 학교부터 1순위로 보고, 8월/12월 모의 진단으로 추세 관찰이 필요합니다.`;
+    case 'C': return `${name} 학생은 잠재력은 있으나 현재 시점에서 과학고 입시 즉시 도전은 무리가 있습니다. 가장 점수가 낮은 ${weak.label} 영역(${weak.pct}%)을 우선 보완하면서, 1순위로는 과학중점학교·자율형 일반고를 권장합니다. 6~12개월 후 재진단을 권장합니다.`;
+    default:  return `${name} 학생은 현 단계에서 일반고 진학을 권장하는 결과가 나왔습니다. 특히 ${weak.label} 영역의 점수가 매우 낮아 과학고 입시 부담이 학생에게 부정적으로 작용할 수 있습니다. 흥미·동기 영역을 폭넓게 다시 탐색하면서 학년 학습에 집중할 수 있도록 안내해 주세요.`;
+  }
+}
+
+function weakest(sc){
+  const r = {A: sc.A/15, B: sc.B/15, C: sc.C/10, D: sc.D/10};
+  const k = Object.keys(r).sort((a,b)=> r[a]-r[b])[0];
+  return {code:k, label:`${k}. ${AREA_INFO[k].name}`, pct: Math.round(r[k]*100)};
+}
+function strongest(sc){
+  const r = {A: sc.A/15, B: sc.B/15, C: sc.C/10, D: sc.D/10};
+  const k = Object.keys(r).sort((a,b)=> r[b]-r[a])[0];
+  return {code:k, label:`${k}. ${AREA_INFO[k].name}`, pct: Math.round(r[k]*100)};
+}
+
+/* ----- 학습·진로 처방 ----- */
+/* ======= 개인화 학습·진로 처방 =======
+   - sc: 점수, gr: 등급, info: 학생 정보(지역 포함)
+   - 약점·강점·1순위 추천교·매칭률·지역에 따라 5개 항목을 동적으로 구성
+   ====================================== */
+function prescription(sc, gr, info){
+  const w   = weakest(sc);
+  const s   = strongest(sc);
+  const m   = schoolMatch3(sc, info, gr);
+  const top = m.ranked[0];
+  const second = m.ranked[1];
+
+  const plan     = buildLearningPlan(gr, w, s, sc);
+  const books    = buildBookList(w, gr);
+  const activity = buildActivityPlan(s, w, top, gr);
+  const weakFix  = buildWeakFix(w, sc);
+  const next     = buildNextSteps(gr, top, second, info, sc);
+
+  return `
+    <div class="row"><div class="lbl">학습 계획</div><div class="body">${plan}</div></div>
+    <div class="row"><div class="lbl">교재 추천</div><div class="body">${books}</div></div>
+    <div class="row"><div class="lbl">활동 추천</div><div class="body">${activity}</div></div>
+    <div class="row"><div class="lbl">최약점 처방</div><div class="body">${weakFix}</div></div>
+    <div class="row"><div class="lbl">다음 단계</div><div class="body">${next}</div></div>
+  `;
+}
+
+/* 1) 학습 계획 — 등급별 기본 시간 + 약점 비중 자동 산정 + 강점 유지 활동 */
+function buildLearningPlan(gr, w, s, sc){
+  const allocation = w.pct < 50 ? '50%' : w.pct < 65 ? '40%' : w.pct < 80 ? '30%' : '20%';
+  const baseHours = ({
+    S:'하루 평균 2시간 자기주도 학습 + 주말 R&E 프로젝트 4시간',
+    A:'하루 평균 1.5시간 자기주도 학습 + 주말 약점 영역 3시간',
+    B:'하루 평균 1시간 자기주도 학습 + 주말 약점 영역 3시간',
+    C:'하루 30~60분 학년 교과 충실 + 주 5회 약점 영역 30분',
+    D:'하루 30분 학년 교과 충실 학습(선행보다 기초 다지기 우선)'
+  })[gr.code];
+  const sName = AREA_INFO[s.code].name;
+  const wName = AREA_INFO[w.code].name;
+  const balanceTip = (s.pct - w.pct >= 25)
+    ? `현재 ${sName}(${s.pct}%)와 ${wName}(${w.pct}%) 격차가 ${s.pct - w.pct}%p로 매우 큼 — 강점 유지보다 약점 회복이 시급`
+    : `영역 간 균형은 양호한 편이므로 강점도 유지·확장하는 학습 비중 분배가 효과적`;
+  return `${baseHours}. 학습 시간의 <b>${allocation}</b>를 <b>${wName}(${w.pct}%)</b> 영역에 우선 배정하고, 강점인 <b>${sName}(${s.pct}%)</b>은 격주 1회 심화 활동으로 유지·확장. ${balanceTip}.`;
+}
+
+/* 2) 교재 추천 — 약점 영역 × 등급(난이도) 매트릭스 */
+function buildBookList(w, gr){
+  const lvl = (gr.code === 'S' || gr.code === 'A') ? 'high' : (gr.code === 'B') ? 'mid' : 'low';
+  const map = {
+    A: {
+      high:'쎈C(중3 심화), 일품(영역별 심화), 하이탑 과학(중2~중3), 고1 통합과학 선행 — 단원별 정의·법칙을 1장 요약 노트로 재정리',
+      mid: '개념원리 + RPM(수학), 오투(과학), 단원평가 문제집 — 풀이 후 "내가 헷갈린 정의" 페이지 누적 정리',
+      low: '개념원리 기본편(수학), 완자 중등 과학, 교과서 정독 후 단원 요약 노트 작성(주 2단원 페이스)'
+    },
+    B: {
+      high:'경기북과 기출 분석집, 영재학교/과학고 자료해석 기출 100선, PISA 과학·수학 자료해석 기출집',
+      mid: '하이탑 탐구·실험 워크북, 경기 영재교육원 입학시험 기출집, 자료해석 PRO 시리즈',
+      low: '"과학탐구 보고서 쓰기"(이정훈), 학교 과학실험 보고서 직접 작성 훈련(주 1편)'
+    },
+    C: {
+      high:'"코스모스"(칼 세이건), "이기적 유전자"(도킨스), "페르마의 마지막 정리"(사이먼 싱) — 독서 후 1장 서평',
+      mid: '과학동아·뉴턴 매거진 정기 구독, EBS 다큐 시리즈(우주의 끝, 빛의 물리학) — 본 후 1줄 메모',
+      low: '청소년 과학 교양서(만화로 보는 시리즈), 과학관 가이드북 — 흥미 회복 우선'
+    },
+    D: {
+      high:'"메타인지 학습법"(리사 손), 학습 분석 시스템(스터디플래너 + 주간 회고) 구축',
+      mid: '스터디플래너 + 주간 회고 노트(매주 일요일 30분 회고)',
+      low: '습관 트래커 앱(미닛·챌린저스), 30일 작은 약속 챌린지 시작'
+    }
+  };
+  return `<b>${AREA_INFO[w.code].name} 보강</b> — ${map[w.code][lvl]}`;
+}
+
+/* 3) 활동 추천 — 강점·약점 + 1순위 추천교 특성에 맞춤 */
+function buildActivityPlan(s, w, top, gr){
+  const acts = [];
+  // 강점 영역에 맞춘 활동
+  if (s.code === 'A' || s.code === 'B'){
+    if (gr.code === 'S' || gr.code === 'A')
+      acts.push('자유 R&E 8주 프로젝트 1편(보고서 + 발표 자료까지 완성)');
+    else if (gr.code === 'B')
+      acts.push('학교 과학동아리 적극 참여 + 시·도 영재교육원 지원');
+    else
+      acts.push('학교 과학동아리·실험 활동에 우선 참여하며 흥미 회복');
+  } else if (s.code === 'C'){
+    acts.push('과학자·연구원 인터뷰 1회, 진로 보고서 1장 작성(자기소개서 1차 자료)');
+  } else {
+    acts.push('주간 학습 일지 + 30일 작은 약속 챌린지로 자기관리 실력을 가시화');
+  }
+  // 약점 보완용 활동 (약점이 C·D면 별도 추가)
+  if (w.code === 'C' && w.pct < 60)
+    acts.push('과학관·연구실·산업현장 탐방 월 1회(다음 6개월) — 진로 동기 체험');
+  if (w.code === 'D' && w.pct < 60)
+    acts.push('주간 회고(매주 일요일 30분) + 학습 플래너 4주 챌린지');
+
+  // 1순위 학교 맞춤
+  const schoolPlan = {
+    bukgwa:  `<b>경기북과학고 맞춤</b> — 학생부 비교과의 깊이 있는 활동 1~2건이 합격을 가르며, 면접에서 사고 과정을 묻는 비중이 큼. R&E 1편(8주)을 자기소개서 핵심 활동으로 정리`,
+    bundang: `<b>분당중앙과학고 맞춤</b> — 신설 첫 해 입시. 면접에서 "신설학교를 왜 선택했는가" + "자기주도 학습 사례 2건" 답변 준비. 분당·판교 IT 인프라 연계 탐구활동 1건이 변별력`,
+    bucheon: `<b>부천과학고 맞춤</b> — 신설 첫 해 입시. 자기주도 학습 사례 2건 + 부천시 자원 활용(도서관·문화시설·산업특성) 활동 1건을 면접용으로 기록`
+  };
+  acts.push(schoolPlan[top.key]);
+  return acts.join('. ');
+}
+
+/* 4) 최약점 처방 — 영역별 진단 + 구체 액션 (점수 직접 인용) */
+function buildWeakFix(w, sc){
+  const map = {
+    A: {
+      diag: `${w.pct}% — 정확한 정의 학습이 부족한 상태. 구어적 설명("크기와 모양이 같다")과 정확한 수학·과학 정의("평행이동·회전·대칭이동으로 완전히 포갤 수 있다")의 차이를 단원별로 정리해야 합니다.`,
+      action: `8주 "개념 노트" 챌린지 — 매주 1단원씩 ① 정의 ② 핵심 공식·법칙 ③ 흔한 오개념 — 3가지를 한 페이지로 직접 정리`
+    },
+    B: {
+      diag: `${w.pct}% — 자료해석·실험설계·다단계 추론 등 절차적 사고 부족. 기출을 풀 때 "어디서 막혔는지"를 메타인지 기록하는 습관이 핵심.`,
+      action: `매주 기출 자료해석/추론형 5문항 + "막힌 지점" 1문장 메타인지 기록. 6주 후 본인 패턴 분석으로 약점 유형 도출`
+    },
+    C: {
+      diag: `${w.pct}% — 진로 동기·정체성이 약하면 입시 면접에서 답변이 표면적이 되어 변별력이 떨어집니다.`,
+      action: `8주 안에 ① 과학자 인터뷰 1회 ② 연구실·기업 탐방 1회 ③ 진로 보고서 1장 — 모두 실행. 이 산출물이 자기소개서 동기 항목의 1차 자료가 됩니다`
+    },
+    D: {
+      diag: `${w.pct}% — 자기조절·끈기·메타인지·정직·협업 중 어디가 약한지 정밀 진단 필요. 신설 분당중앙·부천 합격에 가장 직결되는 핵심 영역.`,
+      action: `30일 학습 일지(매일 5분 회고) + 주간 학습 플래너. 4주 후 본인 데이터로 학습 패턴 분석 → 다음 4주 챌린지 설계`
+    }
+  };
+  // 모든 영역이 비슷하게 낮은 경우 (편차 < 10%p) 추가 메시지
+  const r = {A:sc.A/15, B:sc.B/15, C:sc.C/10, D:sc.D/10};
+  const arr = Object.values(r);
+  const flat = (Math.max(...arr) - Math.min(...arr)) < 0.10;
+  const flatNote = flat ? `<br><i style="color:var(--ink-mute);">참고 — 4개 영역이 비슷한 수준입니다. 한 영역만 끌어올려도 다른 영역이 따라 오를 가능성이 큽니다.</i>` : '';
+  return `<b>${AREA_INFO[w.code].name}</b> · ${map[w.code].diag}<br><b style="color:var(--accent-2);">처방</b>: ${map[w.code].action}${flatNote}`;
+}
+
+/* 5) 다음 단계 — 등급 + 1순위 매칭률 + 차순위 학교 + 지역 고려 */
+function buildNextSteps(gr, top, second, info, sc){
+  const region = info.regionLabel || info.region || '';
+  const sameRegionSchool = (
+    info.region === '성남' ? '분당중앙' :
+    /부천/.test(info.regionEtc||'') ? '부천' :
+    null
+  );
+
+  if (gr.code === 'S'){
+    return `현재 <b>${top.name} ${top.pct}% (${top.tier.label})</b>. 영재학교(경기과학고 등) 도전과 함께 ${top.name}을 안전망으로 동시 검토. 8월까지 자기소개서 초고, 11월 원서 접수까지 R&E 1편 완성. 면접 대비는 9월부터 주 1회 모의 면접 시작.`;
+  }
+  if (gr.code === 'A'){
+    return `현재 <b>${top.name} ${top.pct}% (${top.tier.label})</b>. ${top.name}을 1지망으로 두고 ${second.name}(${second.pct}%)을 차순위 보험으로 동시 검토 권장. 6월·9월·11월 단계적 마일스톤 설정. 모의 면접은 9월부터.`;
+  }
+  if (gr.code === 'B'){
+    if (top.pct >= 70)
+      return `현재 <b>${top.name} ${top.pct}% (${top.tier.label})</b>. 약점 영역 6개월 집중 보완 후 7~8월 재진단. 매칭률 75%+ 달성 시 1지망 확정. 차선으로 ${second.name}(${second.pct}%)도 함께 분석.`;
+    return `현재 <b>${top.name} ${top.pct}%</b>로 도전권. 6개월 후 동일 키트 재진단 필수. 그 사이${sameRegionSchool ? ` ${sameRegionSchool}과학고` : ` ${top.name}` } 합격선·전형 자료를 학생·학부모와 함께 분석.`;
+  }
+  if (gr.code === 'C'){
+    return `현재 매칭률이 모두 70% 미만으로 즉시 도전은 무리. 1년 동안 학년 교과 충실 + 약점 영역 보완. 6개월 후 부분 재진단으로 추세 확인. 매칭률이 65%+에 도달하면 도전 검토. 그 전에는 과학중점학교·자율형 일반고를 1순위로.`;
+  }
+  return `현 시점에서 과학고 즉시 도전은 권장하지 않습니다. 학년 교과 안정화가 1순위. 6개월 후 부분 재진단으로 추세를 확인하며, 학생의 흥미·동기를 폭넓게 재탐색.`;
+}
+
+/* =================================================================
+   경기형 3개 과학고 매칭 알고리즘
+   - 경기북과고 (의정부, 광역단위)
+   - 분당중앙과학고 (성남, 신설·지역쿼터)
+   - 부천과학고 (부천, 신설·지역쿼터)
+   ================================================================= */
+const SCHOOLS = {
+  bukgwa: {
+    name:'경기북과학고',
+    locCity:'의정부시',
+    type:'광역단위 (경기 전역)',
+    short:'전통 명문 · KMO·올림피아드 강세 · 사고력·심화탐구 중심',
+    weights:{A:1.0, B:1.3, C:1.0, D:1.0}, // 사고력(B) 우대
+    regionBonus(info){
+      // 거주지가 경기북부 인근이면 통학 편의 +5%, 그 외 0%
+      const etc = (info.regionEtc||'').replace(/시|군|구/g,'').trim();
+      const north = ['의정부','고양','일산','파주','양주','동두천','포천','구리','남양주'];
+      if (info.region === '기타' && north.some(c => etc.includes(c))) return 5;
+      return 0;
+    },
+    notes:[
+      '광역단위 모집으로 경기 전역에서 경쟁이 치열함',
+      '사고력·자료해석·심화 수학·과학 비중이 큰 입시 전형',
+      '서울대·KAIST 진학률이 가장 높은 경기 과학고'
+    ]
+  },
+  bundang: {
+    name:'분당중앙과학고',
+    locCity:'성남시',
+    type:'신설 (성남시 지역쿼터 30~40% 추정)',
+    short:'신설학교 · 자율적 교육과정 · 분당·판교 IT 인프라 활용 가능',
+    weights:{A:1.0, B:1.0, C:1.1, D:1.2}, // 자기주도(D)·진로(C) 우대
+    regionBonus(info){
+      // 성남시 거주: +18% (지역쿼터 큰 가산)
+      // 성남 인접(용인·광교): +5%
+      if (info.region === '성남') return 18;
+      if (info.region === '용인' || info.region === '광교') return 5;
+      // 기타 경기지역에 성남이 적힌 경우(드물지만) 처리
+      const etc = (info.regionEtc||'');
+      if (info.region === '기타' && /성남|분당|수정|중원/.test(etc)) return 18;
+      return 0;
+    },
+    notes:[
+      '신설 첫 해 입시 — 합격선이 광역단위만큼 높지 않을 가능성',
+      '성남시 거주 학생에 대해 30~40% 수준의 지역 쿼터 적용 예상',
+      '신설학교 특유의 자율성 — 자기주도 학습·기획력이 강한 학생에 유리'
+    ]
+  },
+  bucheon: {
+    name:'부천과학고',
+    locCity:'부천시',
+    type:'신설 (부천시 지역쿼터 30~40% 추정)',
+    short:'신설학교 · 자율적 교육과정 · 부천 산업·문화 인프라 활용',
+    weights:{A:1.0, B:1.0, C:1.1, D:1.2},
+    regionBonus(info){
+      const etc = (info.regionEtc||'');
+      if (info.region === '기타' && /부천|소사|원미|오정/.test(etc)) return 18;
+      // 부천 인접(시흥·안양·광명·인천 일부)
+      if (info.region === '기타' && /시흥|광명|안양|인천/.test(etc)) return 3;
+      return 0;
+    },
+    notes:[
+      '신설 첫 해 입시 — 합격선이 광역단위만큼 높지 않을 가능성',
+      '부천시 거주 학생에 대해 30~40% 수준의 지역 쿼터 적용 예상',
+      '비거주지 학생은 광역 일반전형으로 경쟁 — 매칭률이 낮게 산출됨'
+    ]
+  }
+};
+
+// 학교별 매칭률 계산 — 0~100 (%)
+function schoolPct(sc, info, key){
+  const sch = SCHOOLS[key];
+  const w = sch.weights;
+  // 가중평균 (각 영역의 만점에 가중치 곱한 합으로 정규화)
+  const num = sc.A*w.A + sc.B*w.B + sc.C*w.C + sc.D*w.D;
+  const den = 15*w.A + 15*w.B + 10*w.C + 10*w.D;
+  let pct = (num/den)*100;
+  pct += sch.regionBonus(info);
+  return Math.max(0, Math.min(100, Math.round(pct*10)/10));
+}
+
+// 매칭 등급
+function matchTier(pct){
+  if (pct >= 80) return {label:'안정권', stars:5, cls:'tier-safe',
+    desc:'합격 가능성이 높습니다. 해당 학교를 1지망으로 적극 고려할 단계.'};
+  if (pct >= 70) return {label:'적정권', stars:4, cls:'tier-match',
+    desc:'합격선 부근에 위치합니다. 보완 학습으로 합격선을 안정적으로 넘길 수 있습니다.'};
+  if (pct >= 60) return {label:'도전권', stars:3, cls:'tier-reach',
+    desc:'도전 가능한 구간이지만, 약점 영역의 6개월 집중 보완이 필요합니다.'};
+  if (pct >= 50) return {label:'모험권', stars:2, cls:'tier-long',
+    desc:'합격선에 다소 못 미치는 상태로 추정됩니다. 가능성은 있으나 모험적입니다.'};
+  return {label:'부적합', stars:1, cls:'tier-unfit',
+    desc:'현재 점수로는 합격이 어려울 수 있습니다. 다른 진로를 함께 검토해 주세요.'};
+}
+
+function schoolMatch3(sc, info, gr){
+  const keys = ['bukgwa','bundang','bucheon'];
+  const ranked = keys.map(k=>{
+    const sch = SCHOOLS[k];
+    const pct = schoolPct(sc, info, k);
+    const tier = matchTier(pct);
+    const bonus = sch.regionBonus(info);
+    return { key:k, name: sch.name, pct, tier, bonus, sch };
+  }).sort((a,b)=> b.pct - a.pct);
+  return { ranked };
+}
+
+function schoolMatchHTML(sc, info, gr){
+  const m = schoolMatch3(sc, info, gr);
+  const top = m.ranked[0];
+  let html = `
+    <div class="row"><div class="lbl">1순위</div>
+      <div class="body">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+          <span class="pill primary">${top.name}</span>
+          <span class="match-pct ${top.tier.cls}">${top.pct}% · ${top.tier.label}</span>
+          <span class="stars">${'★'.repeat(top.tier.stars)}${'☆'.repeat(5-top.tier.stars)}</span>
+        </div>
+        <div style="font-size:13px;color:var(--ink-soft);">${top.tier.desc}</div>
+      </div></div>
+  `;
+  // 모든 학교 비교 카드
+  html += `<div class="row"><div class="lbl">3개교 비교</div><div class="body">`;
+  html += `<table class="school-table"><thead><tr>
+    <th>학교</th><th>매칭률</th><th>합격 가능성</th><th>지역 가산</th><th>핵심 특징</th>
+  </tr></thead><tbody>`;
+  m.ranked.forEach((r,idx)=>{
+    html += `<tr>
+      <td><b>${r.name}</b><div class="muted">${r.sch.locCity} · ${r.sch.type}</div></td>
+      <td><span class="match-pct ${r.tier.cls}">${r.pct}%</span></td>
+      <td>${r.tier.label} <span class="stars-sm">${'★'.repeat(r.tier.stars)}${'☆'.repeat(5-r.tier.stars)}</span></td>
+      <td>${r.bonus>0 ? `+${r.bonus}%` : '-'}</td>
+      <td class="muted">${r.sch.short}</td>
+    </tr>`;
+  });
+  html += `</tbody></table>`;
+  // 추천 근거
+  html += `<div style="margin-top:14px;padding:12px 14px;background:var(--bg-soft);border-radius:10px;font-size:13.5px;color:var(--ink-soft);">
+    <b style="color:var(--ink);">추천 근거 — </b>${matchReasoning(sc, info, m)}
+  </div>`;
+  html += `</div></div>`;
+  return html;
+}
+
+function matchReasoning(sc, info, m){
+  const top = m.ranked[0];
+  const region = info.regionLabel || info.region;
+  const reasons = [];
+  if (top.bonus >= 15) reasons.push(`<b>${region}</b> 거주로 <b>${top.name}</b>의 지역 쿼터(예상 30~40%) 가산점이 결정적`);
+  else if (top.bonus > 0) reasons.push(`거주지(${region})가 <b>${top.name}</b> 통학·전형에 유리`);
+  // 영역 강점 매칭
+  const ratios = {A:sc.A/15, B:sc.B/15, C:sc.C/10, D:sc.D/10};
+  const strong = Object.entries(ratios).sort((a,b)=>b[1]-a[1])[0][0];
+  const map = {
+    A:'개념·정의 정확성(A) 영역의 강점이 모든 학교 입시 변별력에 부합',
+    B:'사고력·탐구(B) 영역의 강점은 특히 <b>경기북과학고</b>의 전통적 강세 영역과 매칭',
+    C:'진로 적합성(C) 영역의 강점은 <b>분당중앙·부천</b> 신설학교의 자율적 학습환경에 부합',
+    D:'자기주도·인성(D) 영역의 강점은 <b>분당중앙·부천</b> 신설학교의 자율적 학습환경에 부합'
+  };
+  reasons.push(map[strong]);
+  // 약점
+  const weak = Object.entries(ratios).sort((a,b)=>a[1]-b[1])[0][0];
+  if (ratios[weak] < 0.6){
+    const wmap = {
+      A:'개념 정확성(A)이 60% 미만 — 단원별 정의 재학습이 1순위',
+      B:'탐구·사고력(B)이 60% 미만 — 자료해석·기출 분석 보강 필요',
+      C:'진로 적합성(C)이 60% 미만 — 동기·진로 탐색 활동 보강 필요',
+      D:'자기주도·인성(D)이 60% 미만 — 학습 습관·끈기 보강 필요'
+    };
+    reasons.push(wmap[weak]);
+  }
+  return reasons.join(' · ');
+}
+
+/* ----- 학부모 상담 가이드 ----- */
+function parentGuide(sc, gr, name){
+  const cWeak = sc.C/10 < 0.6;
+  const dWeak = sc.D/10 < 0.6;
+  let openMsg, focusMsg, tips;
+  if (gr.code==='S' || gr.code==='A'){
+    openMsg=`"${name} 학생은 입시 도전이 객관적으로 권장되는 단계입니다."로 자신감을 부여하면서 시작.`;
+    focusMsg='과도한 선행보다 R&E·자기소개서 활동기록 정리, 면접 대비를 우선순위로 안내.';
+    tips='학부모가 자녀의 결정을 존중·지지하는 자세가 합격률을 높인다는 점 강조. 부모 주도형 학습은 동기 저하 위험.';
+  } else if (gr.code==='B'){
+    openMsg='"가능성은 충분합니다. 다만 6개월 집중 보완이 합격을 가른다."로 도전 의욕 + 현실 인식 균형.';
+    focusMsg=`최약점 영역(${weakest(sc).label})에 학습 시간의 40~50%를 배정하는 분기 계획을 제안.`;
+    tips='지역 단위 과학고 또는 과학중점학교를 동시에 검토하는 듀얼 트랙 입시를 안내.';
+  } else if (gr.code==='C'){
+    openMsg='"잠재력은 있으나 현재 시점의 과학고 즉시 도전은 학생에게 부담"이라는 점을 부드럽게 전달.';
+    focusMsg='1순위는 자녀의 자존감 유지 + 흥미 회복. 점수가 아닌 동기·습관 회복부터 시작.';
+    tips='"과학고 안 가도 과학자 될 수 있다"라는 메시지를 명확히 전달해 부모의 압박을 완화.';
+  } else {
+    openMsg='"다른 길도 충분히 빛난다"라는 메시지로 학부모의 입시 압박을 줄여주는 데 초점.';
+    focusMsg='진로 탐색 시간 확보 + 학년 교과 안정 + 추후 분야 재선택 가능성.';
+    tips='필요 시 전문 진로상담사와 연계, 학습 외 활동(예체능·기술 등)도 적극 검토하도록 안내.';
+  }
+  let extra='';
+  if (cWeak) extra += '<div class="row"><div class="lbl">동기 보강</div><div class="body">진로 적합성(C)이 낮습니다. 연구실 탐방, 과학자 인터뷰, 과학관 체험 등 직간접 체험을 6개월 안에 3건 이상 권장.</div></div>';
+  if (dWeak) extra += '<div class="row"><div class="lbl">습관 보강</div><div class="body">자기주도·인성(D)이 낮습니다. 주간 학습 일지, 작은 약속 지키기 챌린지(30일), 메타인지 학습법 안내가 필요합니다.</div></div>';
+  return `
+    <div class="row"><div class="lbl">대화 시작</div><div class="body">${openMsg}</div></div>
+    <div class="row"><div class="lbl">중심 메시지</div><div class="body">${focusMsg}</div></div>
+    <div class="row"><div class="lbl">유의 사항</div><div class="body">${tips}</div></div>
+    ${extra}
+  `;
+}
+
+/* ----- 문항별 상세 ----- */
+function responseTable(sub){
+  let html = `<table class="detail-table"><thead><tr>
+    <th style="width:46px;">#</th><th style="width:60px;">영역</th>
+    <th>문항 / 선택</th>
+    <th style="width:80px;text-align:center;">획득점</th>
+    <th style="width:60px;text-align:center;">결과</th>
+  </tr></thead><tbody>`;
+  Q.forEach((q,i)=>{
+    const idx = sub.answers[i];
+    const opt = (idx!=null) ? q.options[idx] : null;
+    let resultTag='';
+    if (q.type==='mc'){
+      resultTag = (opt && opt.s===1) ? '<span class="tag-correct">정답</span>' : '<span class="tag-wrong">오답</span>';
+    } else {
+      resultTag = `<span class="tag-score">${opt? opt.s : '-'}점</span>`;
+    }
+    const choice = opt? `<div style="margin-top:4px;color:var(--ink-mute);font-size:12.5px;">선택: ${String.fromCharCode(65+idx)}. ${opt.t}</div>` : '<div style="color:var(--bad);">미응답</div>';
+    html += `<tr>
+      <td>Q${i+1}</td>
+      <td>${q.area}</td>
+      <td><div style="font-weight:600;">${q.q || q.scenario}</div>${choice}</td>
+      <td style="text-align:center;font-weight:700;">${opt? opt.s : '-'}</td>
+      <td style="text-align:center;">${resultTag}</td>
+    </tr>`;
+  });
+  html += `</tbody></table>`;
+  return html;
+}
+
+/* =================================================================
+   Export / Import / Clear
+   ================================================================= */
+S('btnExportCsv').addEventListener('click', ()=>{
+  const list = loadAll();
+  if (list.length===0){ alert('내보낼 응답이 없습니다.'); return; }
+  const headers = ['제출일시','이름','학교','학년','거주지역','학생연락처','학부모연락처',
+                   'A점수(/15)','B점수(/15)','C점수(/10)','D점수(/10)','총점(/50)','정답률(%)','등급',
+                   '추천1순위','추천2순위','추천3순위'];
+  const rows = list.map(x=>{
+    const sc = x.scores;
+    const gr = grade(sc);
+    const sm = schoolMatch3(sc, x.info, gr);
+    return [
+      x.submittedAt, x.info.name, x.info.school, x.info.grade,
+      x.info.regionLabel || x.info.region || '',
+      x.info.phone, x.info.parent || '',
+      sc.A, sc.B, sc.C, sc.D, sc.total, sc.pct, `${gr.code} ${gr.label}`,
+      `${sm.ranked[0].name}(${sm.ranked[0].pct}%)`,
+      `${sm.ranked[1].name}(${sm.ranked[1].pct}%)`,
+      `${sm.ranked[2].name}(${sm.ranked[2].pct}%)`
+    ];
+  });
+  const csv = [headers, ...rows].map(r=> r.map(v=> {
+    const s = String(v??'').replace(/"/g,'""');
+    return /[",\n]/.test(s) ? `"${s}"` : s;
+  }).join(',')).join('\n');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
+  download(blob, `과학고진단_응답목록_${dateTag()}.csv`);
+});
+S('btnExportJson').addEventListener('click', ()=>{
+  const list = loadAll();
+  if (list.length===0){ alert('내보낼 응답이 없습니다.'); return; }
+  const blob = new Blob([JSON.stringify(list,null,2)], {type:'application/json'});
+  download(blob, `과학고진단_백업_${dateTag()}.json`);
+});
+/* Google Sheets에서 동기화 — Apps Script doGet 호출 → 로컬에 병합 */
+S('btnSyncSheets').addEventListener('click', async ()=>{
+  if (!SHEETS_ENDPOINT_URL) {
+    alert('Google Sheets 연동이 설정되지 않았습니다.\n\n키트 코드 상단의 SHEETS_ENDPOINT_URL 상수에\nApps Script 웹 앱 URL을 붙여넣어 주세요.\n\n셋업 매뉴얼: 과학고진단_Sheets연동_매뉴얼.md');
+    return;
+  }
+  const btn = S('btnSyncSheets');
+  const orig = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '동기화 중...';
+  try {
+    const res = await fetch(SHEETS_ENDPOINT_URL, { method:'GET' });
+    if (!res.ok) throw new Error('서버 응답 ' + res.status);
+    const remote = await res.json();
+    if (!Array.isArray(remote)) throw new Error('응답 형식이 배열이 아님');
+
+    // 시트 한 행 → 키트의 sub 객체 형식으로 변환
+    const incoming = remote.map(r => {
+      let answers = r.answers;
+      if (typeof answers === 'string' && answers.length){
+        try { answers = JSON.parse(answers); } catch(e){ answers = []; }
+      } else if (!Array.isArray(answers)) answers = [];
+      return {
+        id: r.id || (r.submittedAt + '_' + r.name),
+        submittedAt: r.submittedAt,
+        info: {
+          name: r.name, school: r.school, grade: r.grade,
+          region: '', regionEtc: '', regionLabel: r.regionLabel || '',
+          phone: r.phone, parent: r.parent, consent: true
+        },
+        answers,
+        scores: { A:+r.A, B:+r.B, C:+r.C, D:+r.D, total:+r.total, pct:+r.pct },
+        grade: r.gradeCode || '',
+        kitVersion: r.kitVersion || ''
+      };
+    }).filter(x => x.id && x.info.name);
+
+    const cur = loadAll();
+    const merged = mergeUnique(cur, incoming);
+    saveAll(merged);
+    renderAdminList();
+    alert(`동기화 완료\n· 시트에서 ${remote.length}건 수신\n· 로컬과 합쳐 총 ${merged.length}건 저장됨`);
+  } catch(err){
+    alert('동기화 실패: ' + err.message + '\n\n웹 앱 URL이 올바른지, 인터넷 연결이 정상인지 확인해 주세요.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = orig;
+  }
+});
+
+S('btnPushSheets').addEventListener('click', pushAllLocalToSheets);
+
+S('btnImportJson').addEventListener('click', ()=> S('importFile').click());
+S('importFile').addEventListener('change', e=>{
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev=>{
+    try {
+      const incoming = JSON.parse(ev.target.result);
+      if (!Array.isArray(incoming)) throw new Error('not array');
+      const cur = loadAll();
+      const merged = mergeUnique(cur, incoming);
+      saveAll(merged);
+      alert(`복원 완료: ${incoming.length}건 시도, 최종 ${merged.length}건 저장됨`);
+      renderAdminList();
+    } catch(err){ alert('JSON 파일을 읽지 못했습니다.'); }
+  };
+  r.readAsText(f);
+  e.target.value='';
+});
+function mergeUnique(a,b){
+  const map = new Map();
+  [...a,...b].forEach(x=> map.set(x.id, x));
+  return [...map.values()];
+}
+S('btnClearAll').addEventListener('click', ()=>{
+  if (!confirm('정말 모든 응답을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
+  if (!confirm('한 번 더 확인합니다. 삭제 진행할까요?')) return;
+  saveAll([]);
+  renderAdminList();
+});
+function download(blob, filename){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function dateTag(){
+  const d = new Date();
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+/* =================================================================
+   초기화
+   ================================================================= */
+showScreen('screen-info');
+</script>
+</body>
+</html>
